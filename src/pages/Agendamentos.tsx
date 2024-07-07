@@ -1,11 +1,12 @@
-import React from 'react';
+import { Box, Container, Heading } from '@chakra-ui/react';
 
-const Agendamentos: React.FC = () => {
+const Agendamentos = () => {
   return (
-    <div>
-      <h1>Agendamentos</h1>
-      <p>Página de Agendamentos</p>
-    </div>
+    <Container maxW="container.lg" p={4}>
+      <Box>
+        <Heading>Agendamentos</Heading>
+      </Box>
+    </Container>
   );
 };
 
