@@ -24,7 +24,7 @@ const Formulario = () => {
 
   const onSubmit = async (data: FormData) => {
     try {
-      await axios.post('http://localhost:3000/agendar', {
+      await axios.post('http://localhost:3000/agendamentos', {
         nome: data.nome,
         dataNascimento: data.dataNascimento,
         dataHora: data.dataHora.toISOString(),
