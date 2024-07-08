@@ -1,25 +1,50 @@
-// Path: ProjetoPitang\frontend\src\pages\Formulario.tsx
-
-import { Box, Button, Container, FormControl, FormErrorMessage, FormLabel, Heading, Input, VStack } from '@chakra-ui/react';
+import { useState } from 'react';
+import { Box, Button, Container, FormControl, FormErrorMessage, FormLabel, Heading, Input, VStack, useToast } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import axios from 'axios';
 
 const schema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
   dataNascimento: z.string().min(1, "Data de Nascimento é obrigatória"),
-  dataHora: z.string().min(1, "Data e Horário são obrigatórios"),
+  dataHora: z.date({ required_error: "Data e Horário são obrigatórios" }),
 });
 
 type FormData = z.infer<typeof schema>;
 
 const Formulario = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm<FormData>({
     resolver: zodResolver(schema)
   });
+  const toast = useToast();
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-  const onSubmit = (data: FormData) => {
-    console.log("Simulação de cadastro feito com os seguintes dados:", data);
+  const onSubmit = async (data: FormData) => {
+    try {
+      await axios.post('http://localhost:3000/agendar', {
+        nome: data.nome,
+        dataNascimento: data.dataNascimento,
+        dataHora: data.dataHora.toISOString(),
+      });
+      toast({
+        title: "Sucesso",
+        description: "Cadastro realizado com sucesso.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Falha ao realizar o cadastro.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
 
   return (
@@ -42,7 +67,16 @@ const Formulario = () => {
 
             <FormControl isInvalid={!!errors.dataHora}>
               <FormLabel htmlFor="dataHora">Dia e Horário do Agendamento</FormLabel>
-              <Input id="dataHora" type="datetime-local" {...register('dataHora')} />
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date: Date | null) => {
+                  setSelectedDate(date);
+                  setValue('dataHora', date!);
+                }}
+                showTimeSelect
+                dateFormat="Pp"
+                customInput={<Input />}
+              />
               <FormErrorMessage>{errors.dataHora && errors.dataHora.message}</FormErrorMessage>
             </FormControl>
 
