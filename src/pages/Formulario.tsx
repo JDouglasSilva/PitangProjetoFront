@@ -48,8 +48,8 @@ const Formulario = () => {
   };
 
   return (
-    <Container maxW="container.lg" p={4}>
-      <Box p={4} borderWidth={1} borderRadius="lg">
+    <Container maxW="container.md" p={4}>
+      <Box p={6} borderWidth={1} borderRadius="lg" boxShadow="md">
         <Heading mb={6} textAlign="center" color="green.800">Formulário de Agendamento</Heading>
         <form onSubmit={handleSubmit(onSubmit)}>
           <VStack spacing={4}>
@@ -87,4 +87,5 @@ const Formulario = () => {
     </Container>
   );
 };
+
 export default Formulario;
