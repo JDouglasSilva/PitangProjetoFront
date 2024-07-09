@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Container, Heading, Flex, IconButton, Grid, GridItem } from '@chakra-ui/react';
+import { Box, Container, Heading, Flex, IconButton, Grid, GridItem, Button } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const Agendamentos = () => {
   const [year, setYear] = useState(new Date().getFullYear());
   const [monthlyCounts, setMonthlyCounts] = useState<{ month: number, count: number }[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMonthlyCounts = async () => {
@@ -49,8 +51,13 @@ const Agendamentos = () => {
         <Grid templateColumns="repeat(3, 1fr)" gap={6} mt={4}>
           {months.map((month, index) => (
             <GridItem key={index} p={4} borderWidth={1} borderRadius="lg" textAlign="center">
-              <Heading size="md">{month}</Heading>
-              <Box mt={2}>Consultas: {monthlyCounts[index]?.count || 0}</Box>
+              <Button
+                width="full"
+                onClick={() => navigate(`/agendamentos/${year}/${index + 1}`)}
+              >
+                <Heading size="md">{month}</Heading>
+                <Box mt={2}>Consultas: {monthlyCounts[index]?.count || 0}</Box>
+              </Button>
             </GridItem>
           ))}
         </Grid>

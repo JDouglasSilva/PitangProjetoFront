@@ -1,19 +1,11 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React from 'react';
 import { ChakraProvider } from '@chakra-ui/react';
-import Home from './pages/Home';
-import Agendamentos from './pages/Agendamentos';
-import Formulario from './pages/Formulario';
+import AppRoutes from './routes';
 
 const App = () => {
   return (
     <ChakraProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/agendamentos" element={<Agendamentos />} />
-          <Route path="/formulario" element={<Formulario />} />
-        </Routes>
-      </Router>
+      <AppRoutes />
     </ChakraProvider>
   );
 };
