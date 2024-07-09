@@ -3,10 +3,14 @@ body {
   font-family: 'Inter', sans-serif;
   background-color: #f0f0f0;
   color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Alinhar ao topo */
+  min-height: 100vh;
+  padding-top: 0; /* Remover espaçamento superior */
 }
 
 #root {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;}
+  width: 100%;
+  padding-top: 2rem; /* Adicionar espaçamento superior ao conteúdo */
+}
