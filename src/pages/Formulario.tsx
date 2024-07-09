@@ -8,9 +8,9 @@ import 'react-datepicker/dist/react-datepicker.css';
 import axios from 'axios';
 
 const schema = z.object({
-  nome: z.string().min(1, "Nome é obrigatório"),
-  dataNascimento: z.string().min(1, "Data de Nascimento é obrigatória"),
-  dataHora: z.date({ required_error: "Data e Horário são obrigatórios" }),
+  nomeDoPaciente: z.string().min(1, "Nome é obrigatório"),
+  dataNascimentoPaciente: z.string().min(1, "Data de Nascimento é obrigatória"),
+  dataHoraAgendamento: z.date({ required_error: "Data e Horário são obrigatórios" }),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -25,9 +25,9 @@ const Formulario = () => {
   const onSubmit = async (data: FormData) => {
     try {
       await axios.post('http://localhost:3000/agendamentos', {
-        nome: data.nome,
-        dataNascimento: data.dataNascimento,
-        dataHora: data.dataHora.toISOString(),
+        nomeDoPaciente: data.nomeDoPaciente,
+        dataNascimentoPaciente: data.dataNascimentoPaciente,
+        dataHoraAgendamento: data.dataHoraAgendamento.toISOString(),
       });
       toast({
         title: "Sucesso",
@@ -53,31 +53,31 @@ const Formulario = () => {
         <Heading mb={6} textAlign="center" color="green.800">Formulário de Agendamento</Heading>
         <form onSubmit={handleSubmit(onSubmit)}>
           <VStack spacing={4}>
-            <FormControl isInvalid={!!errors.nome}>
-              <FormLabel htmlFor="nome">Nome</FormLabel>
-              <Input id="nome" placeholder="Nome" {...register('nome')} />
-              <FormErrorMessage>{errors.nome && errors.nome.message}</FormErrorMessage>
+            <FormControl isInvalid={!!errors.nomeDoPaciente}>
+              <FormLabel htmlFor="nomeDoPaciente">Nome</FormLabel>
+              <Input id="nomeDoPaciente" placeholder="Nome" {...register('nomeDoPaciente')} />
+              <FormErrorMessage>{errors.nomeDoPaciente && errors.nomeDoPaciente.message}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isInvalid={!!errors.dataNascimento}>
-              <FormLabel htmlFor="dataNascimento">Data de Nascimento</FormLabel>
-              <Input id="dataNascimento" type="date" {...register('dataNascimento')} />
-              <FormErrorMessage>{errors.dataNascimento && errors.dataNascimento.message}</FormErrorMessage>
+            <FormControl isInvalid={!!errors.dataNascimentoPaciente}>
+              <FormLabel htmlFor="dataNascimentoPaciente">Data de Nascimento</FormLabel>
+              <Input id="dataNascimentoPaciente" type="date" {...register('dataNascimentoPaciente')} />
+              <FormErrorMessage>{errors.dataNascimentoPaciente && errors.dataNascimentoPaciente.message}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isInvalid={!!errors.dataHora}>
-              <FormLabel htmlFor="dataHora">Dia e Horário do Agendamento</FormLabel>
+            <FormControl isInvalid={!!errors.dataHoraAgendamento}>
+              <FormLabel htmlFor="dataHoraAgendamento">Dia e Horário do Agendamento</FormLabel>
               <DatePicker
                 selected={selectedDate}
                 onChange={(date: Date | null) => {
                   setSelectedDate(date);
-                  setValue('dataHora', date!);
+                  setValue('dataHoraAgendamento', date!);
                 }}
                 showTimeSelect
                 dateFormat="Pp"
                 customInput={<Input />}
               />
-              <FormErrorMessage>{errors.dataHora && errors.dataHora.message}</FormErrorMessage>
+              <FormErrorMessage>{errors.dataHoraAgendamento && errors.dataHoraAgendamento.message}</FormErrorMessage>
             </FormControl>
 
             <Button type="submit" colorScheme="green" width="full">Agendar</Button>

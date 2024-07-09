@@ -4,9 +4,9 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
 interface Consulta {
-  nome: string;
-  dataNascimento: string;
-  dataHora: string;
+  nomeDoPaciente: string;
+  dataNascimentoPaciente: string;
+  dataHoraAgendamento: string;
 }
 
 const DiaDetalhes = () => {
@@ -33,9 +33,9 @@ const DiaDetalhes = () => {
         {consultas.map((consulta, index) => (
           <GridItem key={index} p={4} borderWidth={1} borderRadius="lg" textAlign="center" boxShadow="md">
             <Box>
-              <Heading size="md" color="green.600" mb={2}>{consulta.nome}</Heading>
-              <Text>Data de Nascimento: {new Date(consulta.dataNascimento).toLocaleDateString()}</Text>
-              <Text>Horário: {new Date(consulta.dataHora).toLocaleTimeString()}</Text>
+              <Heading size="md" color="green.600" mb={2}>{consulta.nomeDoPaciente}</Heading>
+              <Text>Data de Nascimento: {new Date(consulta.dataNascimentoPaciente).toLocaleDateString()}</Text>
+              <Text>Horário: {new Date(consulta.dataHoraAgendamento).toLocaleTimeString()}</Text>
             </Box>
           </GridItem>
         ))}
