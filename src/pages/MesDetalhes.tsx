@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Container, Heading, Grid, GridItem } from '@chakra-ui/react';
-import { useParams } from 'react-router-dom';
+import { Box, Container, Heading, Grid, GridItem, Button } from '@chakra-ui/react';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const MesDetalhes = () => {
   const { year, month } = useParams();
   const [dailyCounts, setDailyCounts] = useState<{ day: number, count: number }[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDailyCounts = async () => {
@@ -26,8 +27,13 @@ const MesDetalhes = () => {
       <Grid templateColumns="repeat(7, 1fr)" gap={6}>
         {dailyCounts.map((dayInfo, index) => (
           <GridItem key={index} p={4} borderWidth={1} borderRadius="lg" textAlign="center">
-            <Heading size="md">Dia {dayInfo.day}</Heading>
-            <Box mt={2}>Consultas: {dayInfo.count}</Box>
+            <Button
+              width="full"
+              onClick={() => navigate(`/agendamentos/${year}/${month}/${dayInfo.day}`)}
+            >
+              <Heading size="md">Dia {dayInfo.day}</Heading>
+              <Box mt={2}>Consultas: {dayInfo.count}</Box>
+            </Button>
           </GridItem>
         ))}
       </Grid>
