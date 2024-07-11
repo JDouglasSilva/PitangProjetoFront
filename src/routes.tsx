@@ -4,7 +4,7 @@ import Home from './pages/Home';
 import Agendamentos from './pages/Agendamentos';
 import Formulario from './pages/Formulario';
 import MesDetalhes from './pages/MesDetalhes';
-import DiaDetalhes from './pages/DiaDetalhes';  // Importar o novo componente
+import DiaDetalhes from './pages/DiaDetalhes';
 
 const AppRoutes: React.FC = () => {
   return (
@@ -14,7 +14,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/agendamentos" element={<Agendamentos />} />
         <Route path="/formulario" element={<Formulario />} />
         <Route path="/agendamentos/:year/:month" element={<MesDetalhes />} />
-        <Route path="/agendamentos/:year/:month/:day" element={<DiaDetalhes />} />  // Nova rota
+        <Route path="/agendamentos/:year/:month/:day" element={<DiaDetalhes />} />
       </Routes>
     </Router>
   );
