@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, ButtonGroup, Container, Flex, Heading, Text, Grid, GridItem, IconButton, Progress, Select } from '@chakra-ui/react';
+import { Box, Button, ButtonGroup, Container, Flex, Heading, Text, Grid, GridItem, IconButton, Progress, Select, Spacer } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import axios from 'axios';
 
@@ -11,7 +11,7 @@ interface Consulta {
   conclusaoDoAgendamento: boolean;
 }
 
-const Agendamento = () => {
+const Agendamentos = () => {
   const [view, setView] = useState<'Ano' | 'Mês' | 'Dia'>('Ano');
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth() + 1);
@@ -192,83 +192,84 @@ const Agendamento = () => {
 
   return (
     <Container maxW="container.lg" p={4}>
+      <Heading color="green.800" textAlign="center" mb={4}>Agendamentos</Heading>
       <Flex alignItems="center" mb={4}>
+        <Flex flex="1" alignItems="center">
+          <IconButton
+            aria-label="Previous"
+            icon={<ChevronLeftIcon />}
+            onClick={handlePrevious}
+            colorScheme="green"
+            mr={2}
+          />
+          <Flex>
+            {view === 'Ano' && (
+              <Select value={year} onChange={(e) => setYear(Number(e.target.value))}>
+                {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - 50 + i).map((yearOption) => (
+                  <option key={yearOption} value={yearOption}>
+                    {yearOption}
+                  </option>
+                ))}
+              </Select>
+            )}
+            {view === 'Mês' && (
+              <>
+                <Select value={month} onChange={(e) => setMonth(Number(e.target.value))}>
+                  {monthNames.map((monthName, index) => (
+                    <option key={index} value={index + 1}>
+                      {monthName}
+                    </option>
+                  ))}
+                </Select>
+                <Select value={year} onChange={(e) => setYear(Number(e.target.value))}>
+                  {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - 50 + i).map((yearOption) => (
+                    <option key={yearOption} value={yearOption}>
+                      {yearOption}
+                    </option>
+                  ))}
+                </Select>
+              </>
+            )}
+            {view === 'Dia' && (
+              <>
+                <Select value={day} onChange={(e) => setDay(Number(e.target.value))}>
+                  {Array.from({ length: new Date(year, month, 0).getDate() }, (_, i) => i + 1).map((dayOption) => (
+                    <option key={dayOption} value={dayOption}>
+                      {dayOption}
+                    </option>
+                  ))}
+                </Select>
+                <Select value={month} onChange={(e) => setMonth(Number(e.target.value))}>
+                  {monthNames.map((monthName, index) => (
+                    <option key={index} value={index + 1}>
+                      {monthName}
+                    </option>
+                  ))}
+                </Select>
+                <Select value={year} onChange={(e) => setYear(Number(e.target.value))}>
+                  {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - 50 + i).map((yearOption) => (
+                    <option key={yearOption} value={yearOption}>
+                      {yearOption}
+                    </option>
+                  ))}
+                </Select>
+              </>
+            )}
+          </Flex>
+          <IconButton
+            aria-label="Next"
+            icon={<ChevronRightIcon />}
+            onClick={handleNext}
+            colorScheme="green"
+            ml={2}
+          />
+        </Flex>
+        <Spacer />
         <ButtonGroup isAttached>
           <Button onClick={() => setView('Ano')} colorScheme={view === 'Ano' ? 'green' : 'gray'}>Ano</Button>
           <Button onClick={() => setView('Mês')} colorScheme={view === 'Mês' ? 'green' : 'gray'}>Mês</Button>
           <Button onClick={() => setView('Dia')} colorScheme={view === 'Dia' ? 'green' : 'gray'}>Dia</Button>
         </ButtonGroup>
-        <Heading color="green.800" ml={4}>Agendamentos</Heading>
-      </Flex>
-      <Flex alignItems="center" mb={4}>
-        <IconButton
-          aria-label="Previous"
-          icon={<ChevronLeftIcon />}
-          onClick={handlePrevious}
-          colorScheme="green"
-          mr={2}
-        />
-        <Flex>
-          {view === 'Ano' && (
-            <Select value={year} onChange={(e) => setYear(Number(e.target.value))}>
-              {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - 50 + i).map((yearOption) => (
-                <option key={yearOption} value={yearOption}>
-                  {yearOption}
-                </option>
-              ))}
-            </Select>
-          )}
-          {view === 'Mês' && (
-            <>
-              <Select value={month} onChange={(e) => setMonth(Number(e.target.value))}>
-                {monthNames.map((monthName, index) => (
-                  <option key={index} value={index + 1}>
-                    {monthName}
-                  </option>
-                ))}
-              </Select>
-              <Select value={year} onChange={(e) => setYear(Number(e.target.value))}>
-                {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - 50 + i).map((yearOption) => (
-                  <option key={yearOption} value={yearOption}>
-                    {yearOption}
-                  </option>
-                ))}
-              </Select>
-            </>
-          )}
-          {view === 'Dia' && (
-            <>
-              <Select value={day} onChange={(e) => setDay(Number(e.target.value))}>
-                {Array.from({ length: new Date(year, month, 0).getDate() }, (_, i) => i + 1).map((dayOption) => (
-                  <option key={dayOption} value={dayOption}>
-                    {dayOption}
-                  </option>
-                ))}
-              </Select>
-              <Select value={month} onChange={(e) => setMonth(Number(e.target.value))}>
-                {monthNames.map((monthName, index) => (
-                  <option key={index} value={index + 1}>
-                    {monthName}
-                  </option>
-                ))}
-              </Select>
-              <Select value={year} onChange={(e) => setYear(Number(e.target.value))}>
-                {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - 50 + i).map((yearOption) => (
-                  <option key={yearOption} value={yearOption}>
-                    {yearOption}
-                  </option>
-                ))}
-              </Select>
-            </>
-          )}
-        </Flex>
-        <IconButton
-          aria-label="Next"
-          icon={<ChevronRightIcon />}
-          onClick={handleNext}
-          colorScheme="green"
-          ml={2}
-        />
       </Flex>
       {view === 'Ano' && renderYearView()}
       {view === 'Mês' && (
@@ -288,4 +289,4 @@ const Agendamento = () => {
   );
 };
 
-export default Agendamento;
+export default Agendamentos;
