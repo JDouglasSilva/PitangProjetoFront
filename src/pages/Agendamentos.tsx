@@ -1,15 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, ButtonGroup, Container, Flex, Heading, Text, Grid, GridItem, IconButton, Progress, Select, Spacer } from '@chakra-ui/react';
+import { Box, Button, ButtonGroup, Container, Flex, Heading, IconButton, Select, Spacer } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import axios from 'axios';
-
-interface Consulta {
-  nomeDoPaciente: string;
-  dataNascimentoPaciente: string;
-  dataHoraAgendamento: string;
-  estadoDoAgendamento: boolean;
-  conclusaoDoAgendamento: boolean;
-}
+import YearView from '../components/YearView';
+import MonthView from '../components/MonthView';
+import DayView from '../components/DayView';
 
 const Agendamentos = () => {
   const [view, setView] = useState<'Ano' | 'Mês' | 'Dia'>('Ano');
@@ -75,119 +70,6 @@ const Agendamentos = () => {
       setMonth(newDate.getMonth() + 1);
       setDay(newDate.getDate());
     }
-  };
-
-  const getColorForProgress = (value: number) => {
-    if (value < 50) return 'green';
-    if (value < 75) return 'yellow';
-    return 'red';
-  };
-
-  const renderCalendar = () => {
-    const startDay = new Date(year, month - 1, 1).getDay();
-    const daysInMonth = new Date(year, month, 0).getDate();
-    const days = [];
-
-    for (let i = 0; i < startDay; i++) {
-      days.push(<GridItem key={`empty-${i}`} />);
-    }
-
-    for (let i = 1; i <= daysInMonth; i++) {
-      const dayData = data.find(d => d.day === i) || { count: 0 };
-      const progressValue = (dayData.count / 20) * 100;
-      days.push(
-        <GridItem
-          key={i}
-          p={2}
-          borderWidth={1}
-          borderRadius="lg"
-          textAlign="center"
-          boxShadow="md"
-          cursor="pointer"
-          onClick={() => { setView('Dia'); setDay(i); }}
-        >
-          <Box>
-            <Heading size="sm">Dia {i}</Heading>
-            <Text mt={2}>Agendamentos: {dayData.count}</Text>
-            <Progress 
-              value={progressValue} 
-              size="sm" 
-              colorScheme={getColorForProgress(progressValue)}
-              mt={2} 
-            />
-          </Box>
-        </GridItem>
-      );
-    }
-
-    return days;
-  };
-
-  const renderYearView = () => {
-    return (
-      <Grid templateColumns={{ base: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(4, 1fr)' }} gap={4}>
-        {data.map((item, index) => {
-          const daysInMonth = new Date(year, item.month, 0).getDate();
-          const maxConsultations = daysInMonth * 20;
-          const progressValue = (item.count / maxConsultations) * 100;
-          return (
-            <GridItem
-              key={index}
-              p={4}
-              borderWidth={1}
-              borderRadius="lg"
-              textAlign="center"
-              boxShadow="md"
-              cursor="pointer"
-              onClick={() => { setView('Mês'); setMonth(item.month); }}
-            >
-              <Box>
-                <Heading size="md">{monthNames[item.month - 1]}</Heading>
-                <Text mt={2}>Agendamentos: {item.count}</Text>
-                <Progress
-                  value={progressValue}
-                  size="sm"
-                  colorScheme={getColorForProgress(progressValue)}
-                  mt={2}
-                />
-              </Box>
-            </GridItem>
-          );
-        })}
-      </Grid>
-    );
-  };
-
-  const renderDayView = () => {
-    const groupedData = data.reduce((acc: { [key: string]: Consulta[] }, consulta: Consulta) => {
-      const date = new Date(consulta.dataHoraAgendamento);
-      const key = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:00`;
-      if (!acc[key]) {
-        acc[key] = [];
-      }
-      acc[key].push(consulta);
-      return acc;
-    }, {});
-  
-    return (
-      <Box>
-        {Object.keys(groupedData).map((key: string) => (
-          <Box key={key} p={4} borderWidth={1} borderRadius="lg" mb={4} boxShadow="md">
-            <Heading size="md" color="green.600" mb={2}>{key}</Heading>
-            {groupedData[key].map((consulta: Consulta, index: number) => (
-              <Box key={index} mb={4}>
-                <Text>Nome do Paciente: {consulta.nomeDoPaciente}</Text>
-                <Text>Data de Nascimento: {new Date(consulta.dataNascimentoPaciente).toLocaleDateString()}</Text>
-                <Text>Estado do Agendamento: {consulta.estadoDoAgendamento ? "Realizado" : "Não Realizado"}</Text>
-                {consulta.estadoDoAgendamento && (
-                  <Text>Conclusão do Atendimento: {consulta.conclusaoDoAgendamento ? "Vacina aplicada" : "Vacina não aplicada"}</Text>
-                )}
-              </Box>
-            ))}
-          </Box>
-        ))}
-      </Box>
-    );
   };
 
   return (
@@ -271,20 +153,9 @@ const Agendamentos = () => {
           <Button onClick={() => setView('Dia')} colorScheme={view === 'Dia' ? 'green' : 'gray'}>Dia</Button>
         </ButtonGroup>
       </Flex>
-      {view === 'Ano' && renderYearView()}
-      {view === 'Mês' && (
-        <Box>
-          <Grid templateColumns="repeat(7, 1fr)" gap={2} mb={4}>
-            {dayNames.map((dayName, index) => (
-              <GridItem key={index} textAlign="center" fontWeight="bold">{dayName}</GridItem>
-            ))}
-          </Grid>
-          <Grid templateColumns="repeat(7, 1fr)" gap={2}>
-            {renderCalendar()}
-          </Grid>
-        </Box>
-      )}
-      {view === 'Dia' && renderDayView()}
+      {view === 'Ano' && <YearView data={data} monthNames={monthNames} setView={setView} setMonth={setMonth} year={year} />}
+      {view === 'Mês' && <MonthView data={data} month={month} year={year} dayNames={dayNames} setView={setView} setDay={setDay} />}
+      {view === 'Dia' && <DayView data={data} />}
     </Container>
   );
 };
