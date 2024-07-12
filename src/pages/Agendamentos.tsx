@@ -26,9 +26,9 @@ const Agendamentos = () => {
       try {
         let response;
         if (view === 'Ano') {
-          response = await axios.get(`http://localhost:3000/agendamentos/monthly-count/${year}`);
+          response = await axios.get(`http://localhost:3000/agendamentos/${year}`);
         } else if (view === 'Mês') {
-          response = await axios.get(`http://localhost:3000/agendamentos/daily-count/${year}/${month}`);
+          response = await axios.get(`http://localhost:3000/agendamentos/${year}/${month}`);
         } else {
           response = await axios.get(`http://localhost:3000/agendamentos/${year}/${month}/${day}`);
         }
