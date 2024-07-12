@@ -1,5 +1,6 @@
 import React from 'react';
 import { Grid, GridItem, Box, Heading, Text, Progress } from '@chakra-ui/react';
+import CalendarCard from './CalendarCard';
 
 interface MonthViewProps {
   data: any[];
@@ -15,40 +16,20 @@ const MonthView: React.FC<MonthViewProps> = ({ data, month, year, dayNames, setV
   const daysInMonth = new Date(year, month, 0).getDate();
   const days = [];
 
-  const getColorForProgress = (value: number) => {
-    if (value < 50) return 'green';
-    if (value < 75) return 'yellow';
-    return 'red';
-  };
-
   for (let i = 0; i < startDay; i++) {
     days.push(<GridItem key={`empty-${i}`} />);
   }
 
   for (let i = 1; i <= daysInMonth; i++) {
     const dayData = data.find(d => d.day === i) || { count: 0 };
-    const progressValue = (dayData.count / 20) * 100;
     days.push(
-      <GridItem
-        key={i}
-        p={2}
-        borderWidth={1}
-        borderRadius="lg"
-        textAlign="center"
-        boxShadow="md"
-        cursor="pointer"
-        onClick={() => { setView('Dia'); setDay(i); }}
-      >
-        <Box>
-          <Heading size="sm">Dia {i}</Heading>
-          <Text mt={2}>Agendamentos: {dayData.count}</Text>
-          <Progress 
-            value={progressValue} 
-            size="sm" 
-            colorScheme={getColorForProgress(progressValue)}
-            mt={2} 
-          />
-        </Box>
+      <GridItem key={i}>
+        <CalendarCard
+          title={`Dia ${i}`}
+          count={dayData.count}
+          maxCount={20}
+          onClick={() => { setView('Dia'); setDay(i); }}
+        />
       </GridItem>
     );
   }
