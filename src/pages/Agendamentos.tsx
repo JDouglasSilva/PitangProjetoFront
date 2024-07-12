@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, ButtonGroup, Container, Flex, Heading, IconButton, Select, Spacer } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
-import axios from 'axios';
-import YearView from '../components/YearView';
-import MonthView from '../components/MonthView';
-import DayView from '../components/DayView';
+import scheduleRepository from '../services/agendamentos/agendamentoRepository';
+import YearView from '../components/agendamentos/YearView';
+import MonthView from '../components/agendamentos/MonthView';
+import DayView from '../components/agendamentos/DayView';
 
 const Agendamentos = () => {
   const [view, setView] = useState<'Ano' | 'Mês' | 'Dia'>('Ano');
@@ -21,13 +21,13 @@ const Agendamentos = () => {
       try {
         let response;
         if (view === 'Ano') {
-          response = await axios.get(`http://localhost:3000/agendamentos/${year}`);
+          response = await scheduleRepository.getYearSchedules(year);
         } else if (view === 'Mês') {
-          response = await axios.get(`http://localhost:3000/agendamentos/${year}/${month}`);
+          response = await scheduleRepository.getMonthSchedules(year, month);
         } else {
-          response = await axios.get(`http://localhost:3000/agendamentos/${year}/${month}/${day}`);
+          response = await scheduleRepository.getDaySchedules(year, month, day);
         }
-        setData(response.data);
+        setData(response);
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
       }

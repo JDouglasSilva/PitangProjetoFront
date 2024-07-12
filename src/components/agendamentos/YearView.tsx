@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid, GridItem } from '@chakra-ui/react';
-import CalendarCard from './CalendarCard';
+import CalendarCard from '../CalendarCard';
 
 interface YearViewProps {
   data: any[];
