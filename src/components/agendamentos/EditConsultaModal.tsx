@@ -1,3 +1,5 @@
+// src/components/agendamentos/EditConsultaModal.tsx
+
 import React, { useState, useEffect } from 'react';
 import {
   Modal,
@@ -21,9 +23,10 @@ interface EditConsultaModalProps {
   isOpen: boolean;
   onClose: () => void;
   consulta: any;
+  onUpdate: () => void; // Adicione esta linha
 }
 
-const EditConsultaModal: React.FC<EditConsultaModalProps> = ({ isOpen, onClose, consulta }) => {
+const EditConsultaModal: React.FC<EditConsultaModalProps> = ({ isOpen, onClose, consulta, onUpdate }) => { // Adicione onUpdate aos props
   const [estadoDoAgendamento, setEstadoDoAgendamento] = useState(consulta.estadoDoAgendamento ? 'true' : 'false');
   const [conclusaoDoAgendamento, setConclusaoDoAgendamento] = useState(consulta.conclusaoDoAgendamento ? 'true' : 'false');
   const toast = useToast();
@@ -47,6 +50,7 @@ const EditConsultaModal: React.FC<EditConsultaModalProps> = ({ isOpen, onClose, 
         duration: 5000,
         isClosable: true,
       });
+      onUpdate(); // Chame o callback após a edição ser bem-sucedida
       onClose();
     } catch (error) {
       toast({

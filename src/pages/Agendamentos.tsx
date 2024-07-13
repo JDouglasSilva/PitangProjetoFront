@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, ButtonGroup, Container, Flex, Heading, IconButton, Select, Spacer, Grid, GridItem, Text } from '@chakra-ui/react';
+import { Box, Button, ButtonGroup, Container, Flex, Heading, IconButton, Select, Spacer } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { useParams, useNavigate } from 'react-router-dom';
 import scheduleRepository from '../services/agendamentos/agendamentoRepository';
@@ -20,24 +20,24 @@ const Agendamentos = () => {
   const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
   const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        let response;
-        if (view === 'Ano') {
-          response = await scheduleRepository.getYearSchedules(year);
-        } else if (view === 'Mês') {
-          response = await scheduleRepository.getMonthSchedules(year, month);
-          setDailyCounts(response);
-        } else {
-          response = await scheduleRepository.getDaySchedules(year, month, day);
-        }
-        setData(response);
-      } catch (error) {
-        console.error('Erro ao buscar dados:', error);
+  const fetchData = async () => {
+    try {
+      let response;
+      if (view === 'Ano') {
+        response = await scheduleRepository.getYearSchedules(year);
+      } else if (view === 'Mês') {
+        response = await scheduleRepository.getMonthSchedules(year, month);
+        setDailyCounts(response);
+      } else {
+        response = await scheduleRepository.getDaySchedules(year, month, day);
       }
-    };
+      setData(response);
+    } catch (error) {
+      console.error('Erro ao buscar dados:', error);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, [view, year, month, day]);
 
@@ -160,7 +160,7 @@ const Agendamentos = () => {
       </Flex>
       {view === 'Ano' && <YearView data={data} monthNames={monthNames} setView={setView} setMonth={setMonth} year={year} />}
       {view === 'Mês' && <MonthView data={dailyCounts} month={month} year={year} dayNames={dayNames} setView={setView} setDay={setDay} />}
-      {view === 'Dia' && <DayView data={data} />}
+      {view === 'Dia' && <DayView data={data} onUpdate={fetchData} />} {/* Passe o callback para o componente DayView */}
     </Container>
   );
 };

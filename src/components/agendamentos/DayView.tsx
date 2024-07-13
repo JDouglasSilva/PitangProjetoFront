@@ -1,12 +1,15 @@
+// src/components/agendamentos/DayView.tsx
+
 import React, { useState } from 'react';
 import { Box, Heading, Text, Flex, Button, useDisclosure } from '@chakra-ui/react';
 import EditConsultaModal from './EditConsultaModal';
 
 interface DayViewProps {
   data: any[];
+  onUpdate: () => void; // Adicione esta linha
 }
 
-const DayView: React.FC<DayViewProps> = ({ data }) => {
+const DayView: React.FC<DayViewProps> = ({ data, onUpdate }) => { // Adicione onUpdate aos props
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedConsulta, setSelectedConsulta] = useState(null);
 
@@ -52,6 +55,7 @@ const DayView: React.FC<DayViewProps> = ({ data }) => {
           isOpen={isOpen}
           onClose={onClose}
           consulta={selectedConsulta}
+          onUpdate={onUpdate} // Passe o callback para o modal
         />
       )}
     </Box>
