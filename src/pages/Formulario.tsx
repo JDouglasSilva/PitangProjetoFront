@@ -7,8 +7,8 @@ import CustomDatePicker from '../components/CustomDatePicker';
 import CustomTimePicker from '../components/CustomTimePicker';
 
 interface FormData {
-  nome: string;
-  dataNascimento: Date;
+  nomeDoPaciente: string;
+  dataNascimentoPaciente: Date;
   diaAgendamento: Date;
   horaAgendamento: Date | null;
 }
@@ -37,10 +37,9 @@ const Formulario = () => {
   const onSubmit = async (data: FormData) => {
     try {
       const formattedData = {
-        ...data,
-        dataNascimento: format(data.dataNascimento, 'yyyy-MM-dd'),
-        diaAgendamento: format(data.diaAgendamento, 'yyyy-MM-dd'),
-        horaAgendamento: data.horaAgendamento ? format(data.horaAgendamento, 'HH:mm') : null,
+        nomeDoPaciente: data.nomeDoPaciente,
+        dataNascimentoPaciente: format(data.dataNascimentoPaciente, 'yyyy-MM-dd'),
+        dataHoraAgendamento: format(new Date(data.diaAgendamento.setHours(data.horaAgendamento?.getHours() || 0, data.horaAgendamento?.getMinutes() || 0)), 'yyyy-MM-dd HH:mm:ss'),
       };
       await axios.post('http://localhost:3000/agendamentos', formattedData);
       toast({
@@ -66,18 +65,18 @@ const Formulario = () => {
       <Heading mb={4} color="green.800">Agendar Vacina</Heading>
       <form onSubmit={handleSubmit(onSubmit)}>
         <VStack spacing={4} align="stretch">
-          <FormControl isInvalid={!!errors.nome}>
-            <FormLabel htmlFor="nome">Nome</FormLabel>
-            <Input id="nome" placeholder="Nome" {...register('nome', { required: "Nome é obrigatório" })} />
-            <FormErrorMessage>{errors.nome && errors.nome.message}</FormErrorMessage>
+          <FormControl isInvalid={!!errors.nomeDoPaciente}>
+            <FormLabel htmlFor="nomeDoPaciente">Nome</FormLabel>
+            <Input id="nomeDoPaciente" placeholder="Nome" {...register('nomeDoPaciente', { required: "Nome é obrigatório" })} />
+            <FormErrorMessage>{errors.nomeDoPaciente && errors.nomeDoPaciente.message}</FormErrorMessage>
           </FormControl>
 
           <HStack spacing={4} align="stretch">
-            <FormControl isInvalid={!!errors.dataNascimento}>
-              <FormLabel htmlFor="dataNascimento">Data de Nascimento</FormLabel>
+            <FormControl isInvalid={!!errors.dataNascimentoPaciente}>
+              <FormLabel htmlFor="dataNascimentoPaciente">Data de Nascimento</FormLabel>
               <Controller
                 control={control}
-                name="dataNascimento"
+                name="dataNascimentoPaciente"
                 rules={{ required: "Data de nascimento é obrigatória" }}
                 render={({ field }) => (
                   <CustomDatePicker
@@ -90,7 +89,7 @@ const Formulario = () => {
                   />
                 )}
               />
-              <FormErrorMessage>{errors.dataNascimento && errors.dataNascimento.message}</FormErrorMessage>
+              <FormErrorMessage>{errors.dataNascimentoPaciente && errors.dataNascimentoPaciente.message}</FormErrorMessage>
             </FormControl>
 
             <FormControl isInvalid={!!errors.diaAgendamento}>
