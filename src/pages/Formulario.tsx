@@ -1,37 +1,51 @@
-import { useState } from 'react';
-import { Box, Button, Container, FormControl, FormErrorMessage, FormLabel, Heading, Input, VStack, useToast } from '@chakra-ui/react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { useState, useEffect } from 'react';
+import { Box, Button, Container, FormControl, FormErrorMessage, FormLabel, Heading, HStack, VStack, useToast, Input } from '@chakra-ui/react';
+import { useForm, Controller } from 'react-hook-form';
 import axios from 'axios';
+import { format, getHours, isToday } from 'date-fns';
+import CustomDatePicker from '../components/CustomDatePicker';
+import CustomTimePicker from '../components/CustomTimePicker';
 
-const schema = z.object({
-  nomeDoPaciente: z.string().min(1, "Nome é obrigatório"),
-  dataNascimentoPaciente: z.string().min(1, "Data de Nascimento é obrigatória"),
-  dataHoraAgendamento: z.date({ required_error: "Data e Horário são obrigatórios" }),
-});
-
-type FormData = z.infer<typeof schema>;
+interface FormData {
+  nome: string;
+  dataNascimento: Date;
+  diaAgendamento: Date;
+  horaAgendamento: Date | null;
+}
 
 const Formulario = () => {
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm<FormData>({
-    resolver: zodResolver(schema)
-  });
+  const { control, register, handleSubmit, formState: { errors }, watch, setValue } = useForm<FormData>();
   const toast = useToast();
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const today = new Date();
+
+  const diaAgendamento = watch('diaAgendamento');
+
+  useEffect(() => {
+    if (diaAgendamento) {
+      setValue('horaAgendamento', null);
+    }
+  }, [diaAgendamento, setValue]);
+
+  const filterTime = (time: Date) => {
+    if (diaAgendamento && isToday(diaAgendamento)) {
+      const now = new Date();
+      return getHours(time) >= getHours(now);
+    }
+    return true;
+  };
 
   const onSubmit = async (data: FormData) => {
     try {
-      await axios.post('http://localhost:3000/agendamentos', {
-        nomeDoPaciente: data.nomeDoPaciente,
-        dataNascimentoPaciente: data.dataNascimentoPaciente,
-        dataHoraAgendamento: data.dataHoraAgendamento.toISOString(),
-      });
+      const formattedData = {
+        ...data,
+        dataNascimento: format(data.dataNascimento, 'yyyy-MM-dd'),
+        diaAgendamento: format(data.diaAgendamento, 'yyyy-MM-dd'),
+        horaAgendamento: data.horaAgendamento ? format(data.horaAgendamento, 'HH:mm') : null,
+      };
+      await axios.post('http://localhost:3000/agendamentos', formattedData);
       toast({
         title: "Sucesso",
-        description: "Cadastro realizado com sucesso.",
+        description: "Agendamento criado com sucesso.",
         status: "success",
         duration: 5000,
         isClosable: true,
@@ -39,7 +53,7 @@ const Formulario = () => {
     } catch (error) {
       toast({
         title: "Erro",
-        description: "Falha ao realizar o cadastro.",
+        description: "Falha ao criar agendamento.",
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -48,42 +62,79 @@ const Formulario = () => {
   };
 
   return (
-    <Container maxW="container.md" p={4}>
-      <Box p={6} borderWidth={1} borderRadius="lg" boxShadow="md">
-        <Heading mb={6} textAlign="center" color="green.800">Formulário de Agendamento</Heading>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <VStack spacing={4}>
-            <FormControl isInvalid={!!errors.nomeDoPaciente}>
-              <FormLabel htmlFor="nomeDoPaciente">Nome</FormLabel>
-              <Input id="nomeDoPaciente" placeholder="Nome" {...register('nomeDoPaciente')} />
-              <FormErrorMessage>{errors.nomeDoPaciente && errors.nomeDoPaciente.message}</FormErrorMessage>
-            </FormControl>
+    <Container maxW="container.sm" p={4}>
+      <Heading mb={4} color="green.800">Agendar Vacina</Heading>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <VStack spacing={4} align="stretch">
+          <FormControl isInvalid={!!errors.nome}>
+            <FormLabel htmlFor="nome">Nome</FormLabel>
+            <Input id="nome" placeholder="Nome" {...register('nome', { required: "Nome é obrigatório" })} />
+            <FormErrorMessage>{errors.nome && errors.nome.message}</FormErrorMessage>
+          </FormControl>
 
-            <FormControl isInvalid={!!errors.dataNascimentoPaciente}>
-              <FormLabel htmlFor="dataNascimentoPaciente">Data de Nascimento</FormLabel>
-              <Input id="dataNascimentoPaciente" type="date" {...register('dataNascimentoPaciente')} />
-              <FormErrorMessage>{errors.dataNascimentoPaciente && errors.dataNascimentoPaciente.message}</FormErrorMessage>
-            </FormControl>
-
-            <FormControl isInvalid={!!errors.dataHoraAgendamento}>
-              <FormLabel htmlFor="dataHoraAgendamento">Dia e Horário do Agendamento</FormLabel>
-              <DatePicker
-                selected={selectedDate}
-                onChange={(date: Date | null) => {
-                  setSelectedDate(date);
-                  setValue('dataHoraAgendamento', date!);
-                }}
-                showTimeSelect
-                dateFormat="Pp"
-                customInput={<Input />}
+          <HStack spacing={4} align="stretch">
+            <FormControl isInvalid={!!errors.dataNascimento}>
+              <FormLabel htmlFor="dataNascimento">Data de Nascimento</FormLabel>
+              <Controller
+                control={control}
+                name="dataNascimento"
+                rules={{ required: "Data de nascimento é obrigatória" }}
+                render={({ field }) => (
+                  <CustomDatePicker
+                    selected={field.value}
+                    onChange={(date) => {
+                      field.onChange(date);
+                    }}
+                    placeholder="Selecionar data"
+                    maxDate={today}
+                  />
+                )}
               />
-              <FormErrorMessage>{errors.dataHoraAgendamento && errors.dataHoraAgendamento.message}</FormErrorMessage>
+              <FormErrorMessage>{errors.dataNascimento && errors.dataNascimento.message}</FormErrorMessage>
             </FormControl>
 
-            <Button type="submit" colorScheme="green" width="full">Agendar</Button>
-          </VStack>
-        </form>
-      </Box>
+            <FormControl isInvalid={!!errors.diaAgendamento}>
+              <FormLabel htmlFor="diaAgendamento">Dia do Agendamento</FormLabel>
+              <Controller
+                control={control}
+                name="diaAgendamento"
+                rules={{ required: "Dia do agendamento é obrigatório" }}
+                render={({ field }) => (
+                  <CustomDatePicker
+                    selected={field.value}
+                    onChange={(date) => {
+                      field.onChange(date);
+                    }}
+                    placeholder="Selecionar data"
+                    minDate={today}
+                  />
+                )}
+              />
+              <FormErrorMessage>{errors.diaAgendamento && errors.diaAgendamento.message}</FormErrorMessage>
+            </FormControl>
+
+            <FormControl isInvalid={!!errors.horaAgendamento} isDisabled={!diaAgendamento}>
+              <FormLabel htmlFor="horaAgendamento">Hora do Agendamento</FormLabel>
+              <Controller
+                control={control}
+                name="horaAgendamento"
+                rules={{ required: "Hora do agendamento é obrigatória" }}
+                render={({ field }) => (
+                  <CustomTimePicker
+                    selected={field.value}
+                    onChange={field.onChange}
+                    placeholder="Selecionar hora"
+                    filterTime={filterTime}
+                  />
+                )}
+              />
+              <FormErrorMessage>{errors.horaAgendamento && errors.horaAgendamento.message}</FormErrorMessage>
+            </FormControl>
+          </HStack>
+
+          <Button type="submit" colorScheme="green" width="full">Agendar</Button>
+        </VStack>
+      </form>
     </Container>
   );
 };
