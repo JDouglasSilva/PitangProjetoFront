@@ -77,6 +77,22 @@ const Agendamentos = () => {
     }
   };
 
+  const handleChangeView = (newView: 'Ano' | 'Mês' | 'Dia') => {
+    setView(newView);
+    if (newView === 'Dia') {
+      const currentDate = new Date();
+      setYear(currentDate.getFullYear());
+      setMonth(currentDate.getMonth() + 1);
+      setDay(currentDate.getDate());
+    }
+  };
+
+  //Os anos limites na barra de seleção começa em 2019 e termina 2 anos depois do ano atual
+  //para deixar uma barra curta, e que se adapta com o tempo de uso do sistema
+  const currentYear = new Date().getFullYear();
+  const startYear = 2019;
+  const endYear = currentYear + 2;
+
   return (
     <Container maxW="container.lg" p={4}>
       <Heading color="green.800" textAlign="center" mb={4}>Agendamentos</Heading>
@@ -92,7 +108,7 @@ const Agendamentos = () => {
           <Flex>
             {view === 'Ano' && (
               <Select value={year} onChange={(e) => setYear(Number(e.target.value))}>
-                {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - 50 + i).map((yearOption) => (
+                {Array.from({ length: endYear - startYear + 1 }, (_, i) => startYear + i).map((yearOption) => (
                   <option key={yearOption} value={yearOption}>
                     {yearOption}
                   </option>
@@ -109,7 +125,7 @@ const Agendamentos = () => {
                   ))}
                 </Select>
                 <Select value={year} onChange={(e) => setYear(Number(e.target.value))}>
-                  {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - 50 + i).map((yearOption) => (
+                  {Array.from({ length: endYear - startYear + 1 }, (_, i) => startYear + i).map((yearOption) => (
                     <option key={yearOption} value={yearOption}>
                       {yearOption}
                     </option>
@@ -134,7 +150,7 @@ const Agendamentos = () => {
                   ))}
                 </Select>
                 <Select value={year} onChange={(e) => setYear(Number(e.target.value))}>
-                  {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - 50 + i).map((yearOption) => (
+                  {Array.from({ length: endYear - startYear + 1 }, (_, i) => startYear + i).map((yearOption) => (
                     <option key={yearOption} value={yearOption}>
                       {yearOption}
                     </option>
@@ -153,9 +169,9 @@ const Agendamentos = () => {
         </Flex>
         <Spacer />
         <ButtonGroup isAttached>
-          <Button onClick={() => setView('Ano')} colorScheme={view === 'Ano' ? 'green' : 'gray'}>Ano</Button>
-          <Button onClick={() => setView('Mês')} colorScheme={view === 'Mês' ? 'green' : 'gray'}>Mês</Button>
-          <Button onClick={() => setView('Dia')} colorScheme={view === 'Dia' ? 'green' : 'gray'}>Dia</Button>
+          <Button onClick={() => handleChangeView('Ano')} colorScheme={view === 'Ano' ? 'green' : 'gray'}>Ano</Button>
+          <Button onClick={() => handleChangeView('Mês')} colorScheme={view === 'Mês' ? 'green' : 'gray'}>Mês</Button>
+          <Button onClick={() => handleChangeView('Dia')} colorScheme={view === 'Dia' ? 'green' : 'gray'}>Dia</Button>
         </ButtonGroup>
       </Flex>
       {view === 'Ano' && <YearView data={data} monthNames={monthNames} setView={setView} setMonth={setMonth} year={year} />}

@@ -77,28 +77,28 @@ const EditConsultaModal: React.FC<EditConsultaModalProps> = ({ isOpen, onClose, 
               value={estadoDoAgendamento}
             >
               <Stack direction="row">
-                <Radio value='true'>Realizado</Radio>
-                <Radio value='false'>Não Realizado</Radio>
+                <Radio value='true'colorScheme="green">Realizado</Radio>
+                <Radio value='false'colorScheme="red">Não Realizado</Radio>
               </Stack>
             </RadioGroup>
           </FormControl>
 
-          <FormControl as="fieldset" mt={4} isDisabled={estadoDoAgendamento === 'false'}>
+          <FormControl as="fieldset" mt={4}  isDisabled={estadoDoAgendamento === 'false'}>
             <FormLabel as="legend">Conclusão do Atendimento</FormLabel>
             <RadioGroup
               onChange={setConclusaoDoAgendamento}
               value={conclusaoDoAgendamento}
               isDisabled={estadoDoAgendamento === 'false'}
             >
-              <Stack direction="row">
-                <Radio value='true'>Vacina aplicada</Radio>
-                <Radio value='false'>Vacina não aplicada</Radio>
+              <Stack direction="row" >
+                <Radio value='true'colorScheme="green">Vacina aplicada</Radio>
+                <Radio value='false'colorScheme="red">Vacina não aplicada</Radio>
               </Stack>
             </RadioGroup>
           </FormControl>
         </ModalBody>
         <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={handleSave}>
+          <Button colorScheme="green" mr={3} bg="green.400" onClick={handleSave}>
             Salvar
           </Button>
           <Button variant="ghost" onClick={onClose}>Cancelar</Button>

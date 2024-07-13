@@ -31,12 +31,12 @@ const DayView: React.FC<DayViewProps> = ({ data, onUpdate }) => { // Adicione on
   return (
     <Box>
       {Object.keys(groupedData).map((key: string) => (
-        <Box key={key} p={4} borderWidth={1} borderRadius="lg" mb={4} boxShadow="md">
+        <Box key={key} p={4} borderWidth={1} borderRadius="lg" mb={4} boxShadow="md" bg="gray.50">
           <Heading size="md" color="green.600" mb={2}>{key}</Heading>
           <Flex>
             {groupedData[key].map((consulta: any, index: number) => (
-              <Box key={index} p={4} borderWidth={1} borderRadius="lg" mb={4} boxShadow="md" flex="1" m={2} position="relative">
-                <Button size="sm" position="absolute" top="5px" right="5px" onClick={() => handleEditClick(consulta)}>
+              <Box key={index} p={4} borderWidth={1} borderRadius="lg" mb={4} boxShadow="md" flex="1" m={2} position="relative" bg="white">
+                <Button size="sm" position="absolute" top="5px" right="5px" bg="green.100" onClick={() => handleEditClick(consulta)}>
                   Editar
                 </Button>
                 <Text>Nome do Paciente: {consulta.nomeDoPaciente}</Text>
