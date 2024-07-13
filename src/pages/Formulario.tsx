@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Box, Button, Container, FormControl, FormErrorMessage, FormLabel, Heading, HStack, VStack, useToast, Input } from '@chakra-ui/react';
 import { useForm, Controller } from 'react-hook-form';
 import axios from 'axios';
-import { format, getHours, isToday } from 'date-fns';
+import { format, getHours, isToday, getMinutes } from 'date-fns';
 import CustomDatePicker from '../components/CustomDatePicker';
 import CustomTimePicker from '../components/CustomTimePicker';
 
@@ -17,21 +17,45 @@ const Formulario = () => {
   const { control, register, handleSubmit, formState: { errors }, watch, setValue } = useForm<FormData>();
   const toast = useToast();
   const today = new Date();
+  const [horariosIndisponiveis, setHorariosIndisponiveis] = useState<Date[]>([]);
 
   const diaAgendamento = watch('diaAgendamento');
 
   useEffect(() => {
     if (diaAgendamento) {
       setValue('horaAgendamento', null);
+      fetchHorariosIndisponiveis(diaAgendamento);
     }
   }, [diaAgendamento, setValue]);
+
+  const fetchHorariosIndisponiveis = async (dia: Date) => {
+    try {
+      const response = await axios.get(`http://localhost:3000/agendamentos/disponibilidade-hora/${dia.getFullYear()}/${dia.getMonth() + 1}/${dia.getDate()}`);
+      const consultas = response.data;
+
+      const horarios = consultas.reduce((acc: Date[], consulta: any) => {
+        const dataHora = new Date(consulta.dataHoraAgendamento);
+        if (acc.filter(h => h.getTime() === dataHora.getTime()).length < 2) {
+          acc.push(dataHora);
+        }
+        return acc;
+      }, []);
+
+      setHorariosIndisponiveis(horarios);
+    } catch (error) {
+      console.error('Erro ao buscar horários indisponíveis:', error);
+    }
+  };
 
   const filterTime = (time: Date) => {
     if (diaAgendamento && isToday(diaAgendamento)) {
       const now = new Date();
-      return getHours(time) >= getHours(now);
+      return getHours(time) >= getHours(now) && getMinutes(time) >= getMinutes(now);
     }
-    return true;
+
+    return !horariosIndisponiveis.some(horario => 
+      horario.getHours() === time.getHours() && horario.getMinutes() === time.getMinutes()
+    );
   };
 
   const onSubmit = async (data: FormData) => {

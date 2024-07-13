@@ -2,7 +2,6 @@ import React, { forwardRef } from 'react';
 import { Input, InputProps } from '@chakra-ui/react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { setHours, setMinutes, getHours } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 interface CustomTimePickerProps extends Omit<InputProps, 'onChange'> {
