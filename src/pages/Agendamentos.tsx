@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, ButtonGroup, Container, Flex, Heading, IconButton, Select, Spacer } from '@chakra-ui/react';
+import { Box, Button, ButtonGroup, Container, Flex, Heading, IconButton, Select, Spacer, Grid, GridItem, Text } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
+import { useParams, useNavigate } from 'react-router-dom';
 import scheduleRepository from '../services/agendamentos/agendamentoRepository';
 import YearView from '../components/agendamentos/YearView';
 import MonthView from '../components/agendamentos/MonthView';
 import DayView from '../components/agendamentos/DayView';
 
 const Agendamentos = () => {
+  const { year: paramYear, month: paramMonth, day: paramDay } = useParams();
   const [view, setView] = useState<'Ano' | 'Mês' | 'Dia'>('Ano');
-  const [year, setYear] = useState(new Date().getFullYear());
-  const [month, setMonth] = useState(new Date().getMonth() + 1);
-  const [day, setDay] = useState(new Date().getDate());
+  const [year, setYear] = useState(paramYear ? parseInt(paramYear, 10) : new Date().getFullYear());
+  const [month, setMonth] = useState(paramMonth ? parseInt(paramMonth, 10) : new Date().getMonth() + 1);
+  const [day, setDay] = useState(paramDay ? parseInt(paramDay, 10) : new Date().getDate());
   const [data, setData] = useState<any[]>([]);
+  const [dailyCounts, setDailyCounts] = useState<{ day: number, count: number }[]>([]);
+  const navigate = useNavigate();
 
   const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
   const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -24,6 +28,7 @@ const Agendamentos = () => {
           response = await scheduleRepository.getYearSchedules(year);
         } else if (view === 'Mês') {
           response = await scheduleRepository.getMonthSchedules(year, month);
+          setDailyCounts(response);
         } else {
           response = await scheduleRepository.getDaySchedules(year, month, day);
         }
@@ -154,7 +159,7 @@ const Agendamentos = () => {
         </ButtonGroup>
       </Flex>
       {view === 'Ano' && <YearView data={data} monthNames={monthNames} setView={setView} setMonth={setMonth} year={year} />}
-      {view === 'Mês' && <MonthView data={data} month={month} year={year} dayNames={dayNames} setView={setView} setDay={setDay} />}
+      {view === 'Mês' && <MonthView data={dailyCounts} month={month} year={year} dayNames={dayNames} setView={setView} setDay={setDay} />}
       {view === 'Dia' && <DayView data={data} />}
     </Container>
   );

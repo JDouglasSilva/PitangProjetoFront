@@ -12,8 +12,6 @@ const AppRoutes: React.FC = () => {
       <Route path="/" element={<Home />} />
       <Route path="/agendamentos" element={<Agendamentos />} />
       <Route path="/formulario" element={<Formulario />} />
-      <Route path="/agendamentos/:year/:month" element={<MesDetalhes />} />
-      <Route path="/agendamentos/:year/:month/:day" element={<DiaDetalhes />} />
     </Routes>
   );
 };
