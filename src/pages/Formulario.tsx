@@ -13,6 +13,10 @@ interface FormData {
   horaAgendamento: Date | null;
 }
 
+interface Consulta {
+  dataHoraAgendamento: string;
+}
+
 const Formulario = () => {
   const { control, register, handleSubmit, formState: { errors }, watch, setValue } = useForm<FormData>();
   const toast = useToast();
@@ -31,12 +35,14 @@ const Formulario = () => {
   const fetchHorariosIndisponiveis = async (dia: Date) => {
     try {
       const response = await axios.get(`http://localhost:3000/agendamentos/disponibilidade-hora/${dia.getFullYear()}/${dia.getMonth() + 1}/${dia.getDate()}`);
-      const consultas = response.data;
+      const consultas: Consulta[] = response.data;
 
-      const horarios = consultas.reduce((acc: Date[], consulta: any) => {
+      const horarios = consultas.reduce((acc: Date[], consulta: Consulta) => {
         const dataHora = new Date(consulta.dataHoraAgendamento);
         if (acc.filter(h => h.getTime() === dataHora.getTime()).length < 2) {
-          acc.push(dataHora);
+          if (consultas.filter((c: Consulta) => new Date(c.dataHoraAgendamento).getTime() === dataHora.getTime()).length === 2) {
+            acc.push(dataHora);
+          }
         }
         return acc;
       }, []);
