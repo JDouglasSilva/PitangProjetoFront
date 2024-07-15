@@ -9,8 +9,8 @@ import CustomTimePicker from '../components/CustomTimePicker';
 
 interface FormData {
   nomeDoPaciente: string;
-  dataNascimentoPaciente: Date;
-  diaAgendamento: Date;
+  dataNascimentoPaciente: Date | null;
+  diaAgendamento: Date | null;
   horaAgendamento: Date | null;
 }
 
@@ -27,6 +27,17 @@ const Formulario = () => {
   const [agendamentoInfo, setAgendamentoInfo] = useState<FormData | null>(null);
 
   const diaAgendamento = watch('diaAgendamento');
+
+  useEffect(() => {
+    const storedValues = localStorage.getItem('formData');
+    if (storedValues) {
+      const parsedValues = JSON.parse(storedValues);
+      setValue('nomeDoPaciente', parsedValues.nomeDoPaciente);
+      setValue('dataNascimentoPaciente', parsedValues.dataNascimentoPaciente ? new Date(parsedValues.dataNascimentoPaciente) : null);
+      setValue('diaAgendamento', parsedValues.diaAgendamento ? new Date(parsedValues.diaAgendamento) : null);
+      setValue('horaAgendamento', parsedValues.horaAgendamento ? new Date(parsedValues.horaAgendamento) : null);
+    }
+  }, [setValue]);
 
   useEffect(() => {
     if (diaAgendamento) {
@@ -71,12 +82,13 @@ const Formulario = () => {
     try {
       const formattedData = {
         nomeDoPaciente: data.nomeDoPaciente,
-        dataNascimentoPaciente: format(data.dataNascimentoPaciente, 'yyyy-MM-dd'),
-        dataHoraAgendamento: format(new Date(data.diaAgendamento.setHours(data.horaAgendamento?.getHours() || 0, data.horaAgendamento?.getMinutes() || 0)), 'yyyy-MM-dd HH:mm:ss'),
+        dataNascimentoPaciente: format(data.dataNascimentoPaciente!, 'yyyy-MM-dd'),
+        dataHoraAgendamento: format(new Date(data.diaAgendamento!.setHours(data.horaAgendamento?.getHours() || 0, data.horaAgendamento?.getMinutes() || 0)), 'yyyy-MM-dd HH:mm:ss'),
       };
       await axios.post('http://localhost:3000/agendamentos', formattedData);
       setAgendamentoInfo(data);
       setIsModalOpen(true);
+      localStorage.removeItem('formData'); // Clear localStorage on successful submit
     } catch (error) {
       console.error("Falha ao criar agendamento.", error);
     }
@@ -90,10 +102,17 @@ const Formulario = () => {
   const handleVerAgendamentos = () => {
     if (agendamentoInfo) {
       const { diaAgendamento } = agendamentoInfo;
-      navigate('/agendamentos', { state: { year: diaAgendamento.getFullYear(), month: diaAgendamento.getMonth() + 1, day: diaAgendamento.getDate() } });
+      navigate('/agendamentos', { state: { year: diaAgendamento!.getFullYear(), month: diaAgendamento!.getMonth() + 1, day: diaAgendamento!.getDate() } });
     } else {
       navigate('/agendamentos');
     }
+  };
+
+  const saveFormData = (field: string, value: any) => {
+    const storedValues = localStorage.getItem('formData');
+    const formData = storedValues ? JSON.parse(storedValues) : {};
+    formData[field] = value;
+    localStorage.setItem('formData', JSON.stringify(formData));
   };
 
   return (
@@ -124,6 +143,7 @@ const Formulario = () => {
                   return true;
                 }
               })}
+              onChange={e => saveFormData('nomeDoPaciente', e.target.value)}
             />
             <FormErrorMessage>{errors.nomeDoPaciente && errors.nomeDoPaciente.message}</FormErrorMessage>
           </FormControl>
@@ -140,6 +160,7 @@ const Formulario = () => {
                     selected={field.value}
                     onChange={(date) => {
                       field.onChange(date);
+                      saveFormData('dataNascimentoPaciente', date);
                     }}
                     placeholder="Selecionar data"
                     maxDate={today}
@@ -160,6 +181,7 @@ const Formulario = () => {
                     selected={field.value}
                     onChange={(date) => {
                       field.onChange(date);
+                      saveFormData('diaAgendamento', date);
                     }}
                     placeholder="Selecionar data"
                     minDate={today}
@@ -178,7 +200,10 @@ const Formulario = () => {
                 render={({ field }) => (
                   <CustomTimePicker
                     selected={field.value}
-                    onChange={field.onChange}
+                    onChange={(date) => {
+                      field.onChange(date);
+                      saveFormData('horaAgendamento', date);
+                    }}
                     placeholder="Selecionar hora"
                     filterTime={filterTime}
                   />
@@ -199,7 +224,7 @@ const Formulario = () => {
             <ModalHeader>Agendamento marcado com sucesso</ModalHeader>
             <ModalBody>
               <ChakraText>Nome do paciente: {agendamentoInfo.nomeDoPaciente}</ChakraText>
-              <ChakraText>Data do agendamento: {format(agendamentoInfo.diaAgendamento, 'dd/MM/yyyy')}</ChakraText>
+              <ChakraText>Data do agendamento: {format(agendamentoInfo.diaAgendamento!, 'dd/MM/yyyy')}</ChakraText>
               <ChakraText>Horario do agendamento: {format(agendamentoInfo.horaAgendamento!, 'HH:mm')}</ChakraText>
               <ChakraText mt={4}>Marque outro agendamento para outra pessoa, ou veja seu agendamento no calendário de agendamentos.</ChakraText>
             </ModalBody>
