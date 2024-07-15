@@ -31,23 +31,19 @@ describe('YearView', () => {
       </BrowserRouter>
     );
 
-    // Verifica se os meses do ano são renderizados corretamente
     mockData.forEach(({ month }) => {
       expect(screen.getByText(monthNames[month - 1])).toBeInTheDocument();
     });
 
-    // Simula o clique no card do mês de Janeiro
     const januaryCard = screen.getByText('Janeiro');
     fireEvent.click(januaryCard);
 
     expect(setViewMock).toHaveBeenCalledWith('Mês');
     expect(setMonthMock).toHaveBeenCalledWith(1);
 
-    // Verifica se os contadores de agendamentos estão corretos
     mockData.forEach(({ month, count }) => {
       expect(screen.getByText(`Agendamentos: ${count}`)).toBeInTheDocument();
     });
   });
 
-  // Insira mais testes aqui futuramente
 });

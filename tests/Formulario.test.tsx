@@ -1,5 +1,3 @@
-// Path: PitangProjeto/frontend/tests/Formulario.test.tsx
-
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ChakraProvider } from '@chakra-ui/react';

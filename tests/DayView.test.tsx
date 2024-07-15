@@ -20,7 +20,6 @@ const mockData = [
     estadoDoAgendamento: true,
     conclusaoDoAgendamento: true,
   },
-  // Adicione mais consultas para teste aqui
 ];
 
 describe('DayView', () => {

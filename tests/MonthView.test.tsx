@@ -1,5 +1,3 @@
-// Path: PitangProjeto/frontend/tests/MonthView.test.tsx
-
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
@@ -30,22 +28,18 @@ describe('MonthView', () => {
       </BrowserRouter>
     );
 
-    // Verifica se os títulos dos dias da semana estão presentes
     dayNames.forEach(dayName => {
       expect(screen.getByText(dayName)).toBeInTheDocument();
     });
 
-    // Verifica se os dias do mês são renderizados corretamente
     mockData.forEach(({ day }) => {
       expect(screen.getByText(`Dia ${day}`)).toBeInTheDocument();
     });
 
-    // Verifica se os contadores de agendamentos estão corretos
     mockData.forEach(({ day, count }) => {
       expect(screen.getByText(`Agendamentos: ${count}`)).toBeInTheDocument();
     });
 
-    // Verifica se os dias vazios são renderizados corretamente
     const emptyDays = screen.getAllByText('', { exact: false });
     expect(emptyDays.length).toBeGreaterThan(0);
   });
@@ -67,7 +61,6 @@ describe('MonthView', () => {
       </BrowserRouter>
     );
 
-    // Simula o clique no card do dia 1
     const dayCard = screen.getByText('Dia 1');
     fireEvent.click(dayCard);
 
@@ -75,5 +68,4 @@ describe('MonthView', () => {
     expect(setDayMock).toHaveBeenCalledWith(1);
   });
 
-  // Insira mais testes aqui futuramente
 });

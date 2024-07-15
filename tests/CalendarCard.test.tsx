@@ -39,7 +39,6 @@ describe('CalendarCard', () => {
     const { rerender } = renderComponent({ count: 5, maxCount: 20 });
     const progressBar = screen.getByRole('progressbar');
     expect(progressBar).toHaveAttribute('aria-valuenow', '25');
-    // Check color based on progress value (e.g., 'green' for < 50%)
 
     rerender(
       <ChakraProvider>
@@ -47,11 +46,9 @@ describe('CalendarCard', () => {
       </ChakraProvider>
     );
     expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '75');
-    // Check color based on progress value (e.g., 'red' for > 75%)
   });
   
-  // Future queries:
-  // test('renders the progress bar correctly', () => {});
+  // render da cor das barras de progresso
 });
 
 export {};
