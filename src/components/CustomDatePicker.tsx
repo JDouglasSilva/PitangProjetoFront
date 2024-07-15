@@ -1,5 +1,3 @@
-// Path: PitangProjeto\frontend\src\components\CustomDatePicker.tsx
-
 import React, { forwardRef, useState, useEffect } from 'react';
 import { Input, InputProps } from '@chakra-ui/react';
 import DatePicker from 'react-datepicker';
@@ -22,7 +20,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ selected, onChange,
   useEffect(() => {
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth() + 1;
-    axios.get(`http://localhost:3000/agendamentos/${year}/${month}`)
+    axios.get(`${import.meta.env.VITE_API_BASE_URL}/agendamentos/${year}/${month}`)
       .then(response => {
         const days = response.data.filter((day: any) => day.count >= 20).map((day: any) => new Date(year, month - 1, day.day));
         setFullDays(days);

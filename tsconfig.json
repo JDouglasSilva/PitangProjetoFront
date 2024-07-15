@@ -15,7 +15,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["jest", "node", "@testing-library/jest-dom"]
+    "types": ["jest", "node", "@testing-library/jest-dom", "./env"]
   },
-  "include": ["src", "tests/Navbar.test.tsx"]
+  "include": ["src", "tests/Navbar.test.tsx", "env.d.ts"]
 }

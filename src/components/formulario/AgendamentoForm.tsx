@@ -51,7 +51,7 @@ const AgendamentoForm = forwardRef<any, AgendamentoFormProps>(({ onSubmit, saveF
 
   const fetchHorariosIndisponiveis = async (dia: Date) => {
     try {
-      const response = await axios.get(`http://localhost:3000/agendamentos/disponibilidade-hora/${dia.getFullYear()}/${dia.getMonth() + 1}/${dia.getDate()}`);
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/agendamentos/disponibilidade-hora/${dia.getFullYear()}/${dia.getMonth() + 1}/${dia.getDate()}`);
       const consultas: any[] = response.data;
 
       const horarios = consultas.reduce((acc: Date[], consulta: any) => {
@@ -88,7 +88,7 @@ const AgendamentoForm = forwardRef<any, AgendamentoFormProps>(({ onSubmit, saveF
         dataNascimentoPaciente: format(data.dataNascimentoPaciente!, 'yyyy-MM-dd'),
         dataHoraAgendamento: format(new Date(data.diaAgendamento!.setHours(data.horaAgendamento?.getHours() || 0, data.horaAgendamento?.getMinutes() || 0)), 'yyyy-MM-dd HH:mm:ss'),
       };
-      await axios.post('http://localhost:3000/agendamentos', formattedData);
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/agendamentos`, formattedData);
       setAgendamentoInfo(data);
       setIsModalOpen(true);
       localStorage.removeItem('formData'); // Clear localStorage on successful submit
