@@ -1,21 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, ButtonGroup, Container, Flex, Heading, IconButton, Select, Spacer } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import scheduleRepository from '../services/agendamentos/agendamentoRepository';
 import YearView from '../components/agendamentos/YearView';
 import MonthView from '../components/agendamentos/MonthView';
 import DayView from '../components/agendamentos/DayView';
 
 const Agendamentos = () => {
-  const { year: paramYear, month: paramMonth, day: paramDay } = useParams();
-  const [view, setView] = useState<'Ano' | 'Mês' | 'Dia'>('Ano');
-  const [year, setYear] = useState(paramYear ? parseInt(paramYear, 10) : new Date().getFullYear());
-  const [month, setMonth] = useState(paramMonth ? parseInt(paramMonth, 10) : new Date().getMonth() + 1);
-  const [day, setDay] = useState(paramDay ? parseInt(paramDay, 10) : new Date().getDate());
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { state } = location;
+  const initialView = state && state.year && state.month && state.day ? 'Dia' : 'Ano';
+  const initialYear = state && state.year ? state.year : new Date().getFullYear();
+  const initialMonth = state && state.month ? state.month : new Date().getMonth() + 1;
+  const initialDay = state && state.day ? state.day : new Date().getDate();
+  
+  const [view, setView] = useState<'Ano' | 'Mês' | 'Dia'>(initialView);
+  const [year, setYear] = useState<number>(initialYear);
+  const [month, setMonth] = useState<number>(initialMonth);
+  const [day, setDay] = useState<number>(initialDay);
   const [data, setData] = useState<any[]>([]);
   const [dailyCounts, setDailyCounts] = useState<{ day: number, count: number }[]>([]);
-  const navigate = useNavigate();
 
   const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
   const dayNames = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -43,13 +49,13 @@ const Agendamentos = () => {
 
   const handlePrevious = () => {
     if (view === 'Ano') {
-      setYear(prev => prev - 1);
+      setYear((prev: number) => prev - 1);
     } else if (view === 'Mês') {
       if (month === 1) {
         setMonth(12);
-        setYear(prev => prev - 1);
+        setYear((prev: number) => prev - 1);
       } else {
-        setMonth(prev => prev - 1);
+        setMonth((prev: number) => prev - 1);
       }
     } else {
       const newDate = new Date(year, month - 1, day - 1);
@@ -61,13 +67,13 @@ const Agendamentos = () => {
 
   const handleNext = () => {
     if (view === 'Ano') {
-      setYear(prev => prev + 1);
+      setYear((prev: number) => prev + 1);
     } else if (view === 'Mês') {
       if (month === 12) {
         setMonth(1);
-        setYear(prev => prev + 1);
+        setYear((prev: number) => prev + 1);
       } else {
-        setMonth(prev => prev + 1);
+        setMonth((prev: number) => prev + 1);
       }
     } else {
       const newDate = new Date(year, month - 1, day + 1);

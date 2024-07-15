@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Box, Button, Container, FormControl, FormErrorMessage, FormLabel, Heading, HStack, VStack, useToast, Input } from '@chakra-ui/react';
+import { Box, Button, Container, FormControl, FormErrorMessage, FormLabel, Heading, HStack, VStack, Input, Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Text as ChakraText } from '@chakra-ui/react';
 import { useForm, Controller } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { format, getHours, isToday, getMinutes } from 'date-fns';
 import CustomDatePicker from '../components/CustomDatePicker';
@@ -18,10 +19,12 @@ interface Consulta {
 }
 
 const Formulario = () => {
-  const { control, register, handleSubmit, formState: { errors }, watch, setValue } = useForm<FormData>();
-  const toast = useToast();
+  const { control, register, handleSubmit, formState: { errors }, watch, setValue, reset } = useForm<FormData>();
+  const navigate = useNavigate();
   const today = new Date();
   const [horariosIndisponiveis, setHorariosIndisponiveis] = useState<Date[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [agendamentoInfo, setAgendamentoInfo] = useState<FormData | null>(null);
 
   const diaAgendamento = watch('diaAgendamento');
 
@@ -72,21 +75,24 @@ const Formulario = () => {
         dataHoraAgendamento: format(new Date(data.diaAgendamento.setHours(data.horaAgendamento?.getHours() || 0, data.horaAgendamento?.getMinutes() || 0)), 'yyyy-MM-dd HH:mm:ss'),
       };
       await axios.post('http://localhost:3000/agendamentos', formattedData);
-      toast({
-        title: "Sucesso",
-        description: "Agendamento criado com sucesso.",
-        status: "success",
-        duration: 5000,
-        isClosable: true,
-      });
+      setAgendamentoInfo(data);
+      setIsModalOpen(true);
     } catch (error) {
-      toast({
-        title: "Erro",
-        description: "Falha ao criar agendamento.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
+      console.error("Falha ao criar agendamento.", error);
+    }
+  };
+
+  const handleNovoAgendamento = () => {
+    reset();
+    setIsModalOpen(false);
+  };
+
+  const handleVerAgendamentos = () => {
+    if (agendamentoInfo) {
+      const { diaAgendamento } = agendamentoInfo;
+      navigate('/agendamentos', { state: { year: diaAgendamento.getFullYear(), month: diaAgendamento.getMonth() + 1, day: diaAgendamento.getDate() } });
+    } else {
+      navigate('/agendamentos');
     }
   };
 
@@ -185,6 +191,29 @@ const Formulario = () => {
           <Button type="submit" colorScheme="green" width="full">Agendar</Button>
         </VStack>
       </form>
+
+      {agendamentoInfo && (
+        <Modal isOpen={isModalOpen} onClose={() => {}} isCentered>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Agendamento marcado com sucesso</ModalHeader>
+            <ModalBody>
+              <ChakraText>Nome do paciente: {agendamentoInfo.nomeDoPaciente}</ChakraText>
+              <ChakraText>Data do agendamento: {format(agendamentoInfo.diaAgendamento, 'dd/MM/yyyy')}</ChakraText>
+              <ChakraText>Horario do agendamento: {format(agendamentoInfo.horaAgendamento!, 'HH:mm')}</ChakraText>
+              <ChakraText mt={4}>Marque outro agendamento para outra pessoa, ou veja seu agendamento no calendário de agendamentos.</ChakraText>
+            </ModalBody>
+            <ModalFooter>
+              <Button colorScheme="green" mr={3} onClick={handleNovoAgendamento}>
+                Realizar outro agendamento
+              </Button>
+              <Button colorScheme="blue" onClick={handleVerAgendamentos}>
+                Ver agendamentos
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      )}
     </Container>
   );
 };
