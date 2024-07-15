@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { Box, Button, VStack, FormControl, FormErrorMessage, FormLabel, HStack, Input } from '@chakra-ui/react';
 import { useForm, Controller } from 'react-hook-form';
 import axios from 'axios';
@@ -20,12 +20,16 @@ interface AgendamentoFormProps {
   setIsModalOpen: (open: boolean) => void;
 }
 
-const AgendamentoForm: React.FC<AgendamentoFormProps> = ({ onSubmit, saveFormData, setAgendamentoInfo, setIsModalOpen }) => {
+const AgendamentoForm = forwardRef<any, AgendamentoFormProps>(({ onSubmit, saveFormData, setAgendamentoInfo, setIsModalOpen }, ref) => {
   const { control, register, handleSubmit, formState: { errors }, watch, setValue, reset } = useForm<FormData>();
   const today = new Date();
   const [horariosIndisponiveis, setHorariosIndisponiveis] = useState<Date[]>([]);
 
   const diaAgendamento = watch('diaAgendamento');
+
+  useImperativeHandle(ref, () => ({
+    resetForm: () => reset()
+  }));
 
   useEffect(() => {
     const storedValues = localStorage.getItem('formData');
@@ -93,6 +97,18 @@ const AgendamentoForm: React.FC<AgendamentoFormProps> = ({ onSubmit, saveFormDat
     }
   };
 
+  useEffect(() => {
+    const subscription = watch((value, { name }) => {
+      if (name) {
+        const storedValues = localStorage.getItem('formData');
+        const formData = storedValues ? JSON.parse(storedValues) : {};
+        formData[name] = value[name];
+        localStorage.setItem('formData', JSON.stringify(formData));
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
+
   return (
     <form onSubmit={handleSubmit(internalSubmit)}>
       <VStack spacing={4} align="stretch">
@@ -119,7 +135,6 @@ const AgendamentoForm: React.FC<AgendamentoFormProps> = ({ onSubmit, saveFormDat
                 return true;
               }
             })}
-            onChange={e => saveFormData('nomeDoPaciente', e.target.value)}
           />
           <FormErrorMessage>{errors.nomeDoPaciente && errors.nomeDoPaciente.message}</FormErrorMessage>
         </FormControl>
@@ -134,10 +149,7 @@ const AgendamentoForm: React.FC<AgendamentoFormProps> = ({ onSubmit, saveFormDat
               render={({ field }) => (
                 <CustomDatePicker
                   selected={field.value}
-                  onChange={(date) => {
-                    field.onChange(date);
-                    saveFormData('dataNascimentoPaciente', date);
-                  }}
+                  onChange={(date) => field.onChange(date)}
                   placeholder="Selecionar data"
                   maxDate={today}
                 />
@@ -155,10 +167,7 @@ const AgendamentoForm: React.FC<AgendamentoFormProps> = ({ onSubmit, saveFormDat
               render={({ field }) => (
                 <CustomDatePicker
                   selected={field.value}
-                  onChange={(date) => {
-                    field.onChange(date);
-                    saveFormData('diaAgendamento', date);
-                  }}
+                  onChange={(date) => field.onChange(date)}
                   placeholder="Selecionar data"
                   minDate={today}
                 />
@@ -176,10 +185,7 @@ const AgendamentoForm: React.FC<AgendamentoFormProps> = ({ onSubmit, saveFormDat
               render={({ field }) => (
                 <CustomTimePicker
                   selected={field.value}
-                  onChange={(date) => {
-                    field.onChange(date);
-                    saveFormData('horaAgendamento', date);
-                  }}
+                  onChange={(date) => field.onChange(date)}
                   placeholder="Selecionar hora"
                   filterTime={filterTime}
                 />
@@ -193,6 +199,6 @@ const AgendamentoForm: React.FC<AgendamentoFormProps> = ({ onSubmit, saveFormDat
       </VStack>
     </form>
   );
-};
+});
 
 export default AgendamentoForm;

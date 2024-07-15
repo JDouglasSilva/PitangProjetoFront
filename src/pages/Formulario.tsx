@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Container, Heading } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import AgendamentoForm from '../components/formulario/AgendamentoForm';
@@ -15,10 +15,12 @@ const Formulario = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [agendamentoInfo, setAgendamentoInfo] = useState<FormData | null>(null);
   const navigate = useNavigate();
+  const formRef = useRef<any>(null);
 
   const handleNovoAgendamento = () => {
     setAgendamentoInfo(null);
     setIsModalOpen(false);
+    formRef.current.resetForm();
   };
 
   const handleVerAgendamentos = () => {
@@ -45,7 +47,7 @@ const Formulario = () => {
   return (
     <Container maxW="container.sm" p={4}>
       <Heading mb={4} color="green.800">Agendar Vacina</Heading>
-      <AgendamentoForm onSubmit={handleSubmit} saveFormData={saveFormData} setAgendamentoInfo={setAgendamentoInfo} setIsModalOpen={setIsModalOpen} />
+      <AgendamentoForm ref={formRef} onSubmit={handleSubmit} saveFormData={saveFormData} setAgendamentoInfo={setAgendamentoInfo} setIsModalOpen={setIsModalOpen} />
       {agendamentoInfo && (
         <AgendamentoModal
           isOpen={isModalOpen}
