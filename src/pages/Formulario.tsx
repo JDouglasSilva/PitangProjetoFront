@@ -97,7 +97,28 @@ const Formulario = () => {
         <VStack spacing={4} align="stretch">
           <FormControl isInvalid={!!errors.nomeDoPaciente}>
             <FormLabel htmlFor="nomeDoPaciente">Nome</FormLabel>
-            <Input id="nomeDoPaciente" placeholder="Nome" {...register('nomeDoPaciente', { required: "Nome é obrigatório" })} />
+            <Input
+              id="nomeDoPaciente"
+              placeholder="Nome"
+              {...register('nomeDoPaciente', {
+                required: "Nome é obrigatório",
+                validate: value => {
+                  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                  const numberRegex = /\d/;
+                  const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+                  if (emailRegex.test(value)) {
+                    return "O nome não pode ser um email";
+                  }
+                  if (numberRegex.test(value)) {
+                    return "O nome não pode conter números";
+                  }
+                  if (specialCharRegex.test(value)) {
+                    return "O nome não pode conter caracteres especiais";
+                  }
+                  return true;
+                }
+              })}
+            />
             <FormErrorMessage>{errors.nomeDoPaciente && errors.nomeDoPaciente.message}</FormErrorMessage>
           </FormControl>
 
@@ -142,7 +163,7 @@ const Formulario = () => {
               <FormErrorMessage>{errors.diaAgendamento && errors.diaAgendamento.message}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isInvalid={!!errors.horaAgendamento} isDisabled={!diaAgendamento}>
+            <FormControl isInvalid={!!errors.horaAgendamento}>
               <FormLabel htmlFor="horaAgendamento">Hora do Agendamento</FormLabel>
               <Controller
                 control={control}
