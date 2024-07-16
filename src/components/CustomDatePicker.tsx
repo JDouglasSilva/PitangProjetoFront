@@ -11,11 +11,21 @@ interface CustomDatePickerProps extends Omit<InputProps, 'onChange'> {
   dateFormat?: string;
   minDate?: Date;
   maxDate?: Date;
+  yearRangeDirection?: 'past' | 'future';
 }
 
-const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ selected, onChange, dateFormat = 'dd/MM/yyyy', minDate, maxDate, ...props }) => {
+const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
+  selected,
+  onChange,
+  dateFormat = 'dd/MM/yyyy',
+  minDate,
+  maxDate,
+  yearRangeDirection = 'future', // default to future if not specified
+  ...props
+}) => {
   const [fullDays, setFullDays] = useState<Date[]>([]);
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+  const currentYear = new Date().getFullYear();
 
   useEffect(() => {
     const year = currentMonth.getFullYear();
@@ -71,6 +81,10 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ selected, onChange,
     );
   };
 
+  const yearOptions = yearRangeDirection === 'past'
+    ? Array.from({ length: 130 }, (_, i) => currentYear - i) 
+    : Array.from({ length: 4 }, (_, i) => currentYear + i);
+
   return (
     <DatePicker
       selected={selected}
@@ -83,6 +97,83 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({ selected, onChange,
       dayClassName={dayClassName}
       renderDayContents={(day, date) => customDay(date)}
       filterDate={date => !isFullDay(date) || isPastDay(date)}
+      showMonthDropdown
+      showYearDropdown
+      dropdownMode="select"
+      renderCustomHeader={({
+        date,
+        changeYear,
+        changeMonth,
+        decreaseMonth,
+        increaseMonth,
+        prevMonthButtonDisabled,
+        nextMonthButtonDisabled,
+      }) => (
+        <div style={{ margin: 10, display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <button
+            onClick={decreaseMonth}
+            disabled={prevMonthButtonDisabled}
+            style={{
+              backgroundColor: "transparent",
+              border: "none",
+              cursor: "pointer",
+              fontSize: "1.2em",
+              padding: "0 10px",
+              color: "#007BFF"
+            }}
+          >
+            {"<"}
+          </button>
+          <select
+            value={date.getFullYear()}
+            onChange={({ target: { value } }) => changeYear(parseInt(value))}
+            style={{
+              marginRight: "10px",
+              padding: "5px",
+              borderRadius: "4px",
+              border: "1px solid #ccc",
+              cursor: "pointer"
+            }}
+          >
+            {yearOptions.map(year => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+          <select
+            value={date.getMonth()}
+            onChange={({ target: { value } }) => changeMonth(parseInt(value))}
+            style={{
+              marginLeft: "10px",
+              padding: "5px",
+              borderRadius: "4px",
+              border: "1px solid #ccc",
+              cursor: "pointer"
+            }}
+          >
+            {Array.from({ length: 12 }, (_, i) => (
+              <option key={i} value={i}>
+                {new Date(0, i).toLocaleString("pt-BR", { month: "long" })}
+              </option>
+            ))}
+          </select>
+          <button
+            onClick={increaseMonth}
+            disabled={nextMonthButtonDisabled}
+            style={{
+              backgroundColor: "transparent",
+              border: "none",
+              cursor: "pointer",
+              fontSize: "1.2em",
+              padding: "0 10px",
+              color: "#007BFF"
+            }}
+          >
+            {">"}
+          </button>
+        </div>
+      )}
     />
   );
 };

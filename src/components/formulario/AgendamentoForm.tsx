@@ -172,10 +172,11 @@ const AgendamentoForm = forwardRef<any, AgendamentoFormProps>(({ onSubmit, saveF
               rules={{ required: "Data de nascimento é obrigatória" }}
               render={({ field }) => (
                 <CustomDatePicker
-                  selected={field.value}
-                  onChange={(date) => field.onChange(date)}
-                  placeholder="Selecionar data"
-                  maxDate={today}
+                selected={field.value}
+                onChange={(date) => field.onChange(date)}
+                placeholder="Selecionar data"
+                maxDate={today}
+                yearRangeDirection="past"
                 />
               )}
             />
@@ -191,12 +192,10 @@ const AgendamentoForm = forwardRef<any, AgendamentoFormProps>(({ onSubmit, saveF
               render={({ field }) => (
                 <CustomDatePicker
                   selected={field.value}
-                  onChange={(date) => {
-                    setIsPageReload(false);
-                    field.onChange(date);
-                  }}
+                  onChange={(date) => field.onChange(date)}
                   placeholder="Selecionar data"
                   minDate={today}
+                  yearRangeDirection="future"
                 />
               )}
             />

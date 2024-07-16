@@ -1,0 +1,14 @@
+/* Customize the dropdowns in DatePicker */
+.react-datepicker__header {
+    background-color: #ff0000;
+  }
+  
+  .react-datepicker__month-dropdown-container,
+  .react-datepicker__year-dropdown-container {
+    margin: 0 10px;
+  }
+  
+  .date-picker-popper {
+    z-index: 1000;
+  }
+  
