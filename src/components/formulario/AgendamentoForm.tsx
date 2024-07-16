@@ -24,8 +24,10 @@ const AgendamentoForm = forwardRef<any, AgendamentoFormProps>(({ onSubmit, saveF
   const { control, register, handleSubmit, formState: { errors }, watch, setValue, reset } = useForm<FormData>();
   const today = new Date();
   const [horariosIndisponiveis, setHorariosIndisponiveis] = useState<Date[]>([]);
+  const [isPageReload, setIsPageReload] = useState<boolean>(true);
 
   const diaAgendamento = watch('diaAgendamento');
+  const horaAgendamento = watch('horaAgendamento');
 
   useImperativeHandle(ref, () => ({
     resetForm: () => reset()
@@ -40,14 +42,25 @@ const AgendamentoForm = forwardRef<any, AgendamentoFormProps>(({ onSubmit, saveF
       setValue('diaAgendamento', parsedValues.diaAgendamento ? new Date(parsedValues.diaAgendamento) : null);
       setValue('horaAgendamento', parsedValues.horaAgendamento ? new Date(parsedValues.horaAgendamento) : null);
     }
+    setIsPageReload(false);
   }, [setValue]);
 
   useEffect(() => {
     if (diaAgendamento) {
-      setValue('horaAgendamento', null);
+      if (!isPageReload) {
+        setValue('horaAgendamento', null);
+      }
       fetchHorariosIndisponiveis(diaAgendamento);
     }
-  }, [diaAgendamento, setValue]);
+  }, [diaAgendamento, setValue, isPageReload]);
+
+  useEffect(() => {
+    if (horaAgendamento && diaAgendamento) {
+      const storedValues = JSON.parse(localStorage.getItem('formData') || '{}');
+      storedValues.horaAgendamento = horaAgendamento;
+      localStorage.setItem('formData', JSON.stringify(storedValues));
+    }
+  }, [horaAgendamento, diaAgendamento]);
 
   const fetchHorariosIndisponiveis = async (dia: Date) => {
     try {
@@ -65,6 +78,17 @@ const AgendamentoForm = forwardRef<any, AgendamentoFormProps>(({ onSubmit, saveF
       }, []);
 
       setHorariosIndisponiveis(horarios);
+
+      // Preserve the hour if it was already selected before fetching unavailable hours and if it's still valid
+      const storedValues = JSON.parse(localStorage.getItem('formData') || '{}');
+      if (storedValues.horaAgendamento) {
+        const selectedHour = new Date(storedValues.horaAgendamento);
+        if (!horarios.some(h => h.getHours() === selectedHour.getHours() && h.getMinutes() === selectedHour.getMinutes())) {
+          setValue('horaAgendamento', selectedHour);
+        } else {
+          setValue('horaAgendamento', null);
+        }
+      }
     } catch (error) {
       console.error('Erro ao buscar horários indisponíveis:', error);
     }
@@ -167,7 +191,10 @@ const AgendamentoForm = forwardRef<any, AgendamentoFormProps>(({ onSubmit, saveF
               render={({ field }) => (
                 <CustomDatePicker
                   selected={field.value}
-                  onChange={(date) => field.onChange(date)}
+                  onChange={(date) => {
+                    setIsPageReload(false);
+                    field.onChange(date);
+                  }}
                   placeholder="Selecionar data"
                   minDate={today}
                 />
