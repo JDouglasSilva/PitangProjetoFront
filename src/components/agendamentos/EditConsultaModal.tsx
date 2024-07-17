@@ -1,5 +1,3 @@
-// src/components/agendamentos/EditConsultaModal.tsx
-
 import React, { useState, useEffect } from 'react';
 import {
   Modal,
@@ -23,10 +21,10 @@ interface EditConsultaModalProps {
   isOpen: boolean;
   onClose: () => void;
   consulta: any;
-  onUpdate: () => void; // Adicione esta linha
+  onUpdate: () => void;
 }
 
-const EditConsultaModal: React.FC<EditConsultaModalProps> = ({ isOpen, onClose, consulta, onUpdate }) => { // Adicione onUpdate aos props
+const EditConsultaModal: React.FC<EditConsultaModalProps> = ({ isOpen, onClose, consulta, onUpdate }) => {
   const [estadoDoAgendamento, setEstadoDoAgendamento] = useState(consulta.estadoDoAgendamento ? 'true' : 'false');
   const [conclusaoDoAgendamento, setConclusaoDoAgendamento] = useState(consulta.conclusaoDoAgendamento ? 'true' : 'false');
   const toast = useToast();
@@ -39,7 +37,7 @@ const EditConsultaModal: React.FC<EditConsultaModalProps> = ({ isOpen, onClose, 
 
   const handleSave = async () => {
     try {
-      await axios.patch(`http://localhost:3000/agendamentos/${consulta.idAgendamento}`, {
+      await axios.patch(`${import.meta.env.VITE_API_BASE_URL}/agendamentos/${consulta.idAgendamento}`, {
         estadoDoAgendamento: estadoDoAgendamento === 'true',
         conclusaoDoAgendamento: conclusaoDoAgendamento === 'true'
       });
@@ -50,7 +48,7 @@ const EditConsultaModal: React.FC<EditConsultaModalProps> = ({ isOpen, onClose, 
         duration: 5000,
         isClosable: true,
       });
-      onUpdate(); // Chame o callback após a edição ser bem-sucedida
+      onUpdate();
       onClose();
     } catch (error) {
       toast({
@@ -77,22 +75,22 @@ const EditConsultaModal: React.FC<EditConsultaModalProps> = ({ isOpen, onClose, 
               value={estadoDoAgendamento}
             >
               <Stack direction="row">
-                <Radio value='true'colorScheme="green">Realizado</Radio>
-                <Radio value='false'colorScheme="red">Não Realizado</Radio>
+                <Radio value='true' colorScheme="green">Realizado</Radio>
+                <Radio value='false' colorScheme="red">Não Realizado</Radio>
               </Stack>
             </RadioGroup>
           </FormControl>
 
-          <FormControl as="fieldset" mt={4}  isDisabled={estadoDoAgendamento === 'false'}>
+          <FormControl as="fieldset" mt={4} isDisabled={estadoDoAgendamento === 'false'}>
             <FormLabel as="legend">Conclusão do Atendimento</FormLabel>
             <RadioGroup
               onChange={setConclusaoDoAgendamento}
               value={conclusaoDoAgendamento}
               isDisabled={estadoDoAgendamento === 'false'}
             >
-              <Stack direction="row" >
-                <Radio value='true'colorScheme="green">Vacina aplicada</Radio>
-                <Radio value='false'colorScheme="red">Vacina não aplicada</Radio>
+              <Stack direction="row">
+                <Radio value='true' colorScheme="green">Vacina aplicada</Radio>
+                <Radio value='false' colorScheme="red">Vacina não aplicada</Radio>
               </Stack>
             </RadioGroup>
           </FormControl>

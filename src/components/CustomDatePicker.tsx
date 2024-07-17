@@ -20,7 +20,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
   dateFormat = 'dd/MM/yyyy',
   minDate,
   maxDate,
-  yearRangeDirection = 'future', // default to future if not specified
+  yearRangeDirection = 'future',
   ...props
 }) => {
   const [fullDays, setFullDays] = useState<Date[]>([]);
@@ -82,7 +82,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
   };
 
   const yearOptions = yearRangeDirection === 'past'
-    ? Array.from({ length: 130 }, (_, i) => currentYear - i) 
+    ? Array.from({ length: 130 }, (_, i) => currentYear - i)
     : Array.from({ length: 4 }, (_, i) => currentYear + i);
 
   return (
@@ -111,7 +111,10 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
       }) => (
         <div style={{ margin: 10, display: "flex", justifyContent: "center", alignItems: "center" }}>
           <button
-            onClick={decreaseMonth}
+            onClick={(e) => {
+              e.preventDefault();
+              decreaseMonth();
+            }}
             disabled={prevMonthButtonDisabled}
             style={{
               backgroundColor: "transparent",
@@ -159,7 +162,10 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
             ))}
           </select>
           <button
-            onClick={increaseMonth}
+            onClick={(e) => {
+              e.preventDefault();
+              increaseMonth();
+            }}
             disabled={nextMonthButtonDisabled}
             style={{
               backgroundColor: "transparent",
