@@ -40,7 +40,7 @@ const DayView: React.FC<DayViewProps> = ({ data, onUpdate }) => { // Adicione on
                   Editar
                 </Button>
                 <Text>Nome do Paciente: {consulta.nomeDoPaciente}</Text>
-                <Text>Data de Nascimento: {new Date(consulta.dataNascimentoPaciente).toLocaleDateString()}</Text>
+                <Text>Data de Nascimento: {new Date(consulta.dataNascimentoPaciente).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}</Text>
                 <Text>Estado do Agendamento: {consulta.estadoDoAgendamento ? "Realizado" : "Não Realizado"}</Text>
                 {consulta.estadoDoAgendamento && (
                   <Text>Conclusão do Atendimento: {consulta.conclusaoDoAgendamento ? "Vacina aplicada" : "Vacina não aplicada"}</Text>
