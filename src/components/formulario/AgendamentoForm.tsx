@@ -97,9 +97,9 @@ const AgendamentoForm = forwardRef<any, AgendamentoFormProps>(({ onSubmit, saveF
   const filterTime = (time: Date) => {
     if (diaAgendamento && isToday(diaAgendamento)) {
       const now = new Date();
-      return getHours(time) >= getHours(now) && getMinutes(time) >= getMinutes(now);
+      return time.getTime() >= now.getTime();
     }
-
+  
     return !horariosIndisponiveis.some(horario => 
       horario.getHours() === time.getHours() && horario.getMinutes() === time.getMinutes()
     );
