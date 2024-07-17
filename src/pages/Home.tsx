@@ -1,3 +1,5 @@
+// frontend/src/pages/Home.tsx
+
 import React from 'react';
 import { Box, Button, Container, Flex, Heading, Text } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';

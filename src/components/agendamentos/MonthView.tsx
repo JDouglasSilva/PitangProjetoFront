@@ -1,3 +1,6 @@
+// src/components/agendamentos/MonthView.tsx
+
+
 import React from 'react';
 import { Grid, GridItem, Box, Heading, Text, Progress } from '@chakra-ui/react';
 import CalendarCard from '../CalendarCard';
@@ -16,6 +19,8 @@ const MonthView: React.FC<MonthViewProps> = ({ data, month, year, dayNames, setV
   const daysInMonth = new Date(year, month, 0).getDate();
   const days = [];
 
+  //Essa é a parte logica que permite o formato de calendario na exibição no formato de mês, 
+  //adicionando espaços vazios no começo ou final de cada mês, a depender do mês
   for (let i = 0; i < startDay; i++) {
     days.push(<GridItem key={`empty-${i}`} />);
   }

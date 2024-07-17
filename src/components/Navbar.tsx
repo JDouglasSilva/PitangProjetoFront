@@ -1,3 +1,5 @@
+// frontend/src/components/Navbar.tsx
+
 import React from 'react';
 import { Box, Flex, Heading, useColorModeValue, Button } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';

@@ -1,3 +1,5 @@
+// frontend/tests/CalendarCard.test.tsx
+
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import CalendarCard from '../src/components/CalendarCard';

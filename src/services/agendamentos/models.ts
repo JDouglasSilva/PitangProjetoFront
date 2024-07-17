@@ -1,3 +1,6 @@
+// frontend/src/pages/services/agendamentos/models.tsx
+
+
 export interface AgendamentoDTO {
     id: number;
     nomeDoPaciente: string;

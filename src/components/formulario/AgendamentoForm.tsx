@@ -1,9 +1,11 @@
+// src/components/formulario/AgendamentoForm.tsx
+
 import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { Box, Button, VStack, FormControl, FormErrorMessage, FormLabel, HStack, Input } from '@chakra-ui/react';
 import { useForm, Controller } from 'react-hook-form';
 import axios from 'axios';
-import CustomDatePicker from '../CustomDatePicker';
-import CustomTimePicker from '../CustomTimePicker';
+import CustomDatePicker from './CustomDatePicker';
+import CustomTimePicker from './CustomTimePicker';
 import { format, getHours, isToday, getMinutes } from 'date-fns';
 
 interface FormData {
@@ -12,7 +14,6 @@ interface FormData {
   diaAgendamento: Date | null;
   horaAgendamento: Date | null;
 }
-
 interface AgendamentoFormProps {
   onSubmit: (data: FormData) => void;
   saveFormData: (field: string, value: any) => void;
@@ -34,7 +35,7 @@ const AgendamentoForm = forwardRef<any, AgendamentoFormProps>(({ onSubmit, saveF
   }));
 
   useEffect(() => {
-    const storedValues = localStorage.getItem('formData');
+    const storedValues = localStorage.getItem('formData'); 
     if (storedValues) {
       const parsedValues = JSON.parse(storedValues);
       setValue('nomeDoPaciente', parsedValues.nomeDoPaciente);
@@ -62,6 +63,8 @@ const AgendamentoForm = forwardRef<any, AgendamentoFormProps>(({ onSubmit, saveF
     }
   }, [horaAgendamento, diaAgendamento]);
 
+  //Ao escolher o dia do agendamento, esse metodo verifica quais horarios estão cheios, 
+  //para não permitir a escolha destes pelo usuario
   const fetchHorariosIndisponiveis = async (dia: Date) => {
     try {
       const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/agendamentos/disponibilidade-hora/${dia.getFullYear()}/${dia.getMonth() + 1}/${dia.getDate()}`);
@@ -79,7 +82,6 @@ const AgendamentoForm = forwardRef<any, AgendamentoFormProps>(({ onSubmit, saveF
 
       setHorariosIndisponiveis(horarios);
 
-      // Preserve the hour if it was already selected before fetching unavailable hours and if it's still valid
       const storedValues = JSON.parse(localStorage.getItem('formData') || '{}');
       if (storedValues.horaAgendamento) {
         const selectedHour = new Date(storedValues.horaAgendamento);
@@ -121,6 +123,7 @@ const AgendamentoForm = forwardRef<any, AgendamentoFormProps>(({ onSubmit, saveF
     }
   };
 
+    //Parte responsavel por cumprir a regra de negocio de manter as informações mesmo atualziando a pagina
   useEffect(() => {
     const subscription = watch((value, { name }) => {
       if (name) {

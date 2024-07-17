@@ -6,10 +6,10 @@ import EditConsultaModal from './EditConsultaModal';
 
 interface DayViewProps {
   data: any[];
-  onUpdate: () => void; // Adicione esta linha
+  onUpdate: () => void;
 }
 
-const DayView: React.FC<DayViewProps> = ({ data, onUpdate }) => { // Adicione onUpdate aos props
+const DayView: React.FC<DayViewProps> = ({ data, onUpdate }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedConsulta, setSelectedConsulta] = useState(null);
 
@@ -55,7 +55,7 @@ const DayView: React.FC<DayViewProps> = ({ data, onUpdate }) => { // Adicione on
           isOpen={isOpen}
           onClose={onClose}
           consulta={selectedConsulta}
-          onUpdate={onUpdate} // Passe o callback para o modal
+          onUpdate={onUpdate}
         />
       )}
     </Box>

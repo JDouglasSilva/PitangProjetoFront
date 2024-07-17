@@ -1,3 +1,5 @@
+// src/components/agendamentos/YearView.tsx
+
 import React from 'react';
 import { Grid, GridItem } from '@chakra-ui/react';
 import CalendarCard from '../CalendarCard';

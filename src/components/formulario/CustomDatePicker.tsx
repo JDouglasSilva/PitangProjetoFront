@@ -1,3 +1,5 @@
+// frontend/src/components/formulario/CustomDatePicker.tsx
+
 import React, { forwardRef, useState, useEffect } from 'react';
 import { Input, InputProps } from '@chakra-ui/react';
 import DatePicker from 'react-datepicker';
@@ -27,6 +29,7 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   const currentYear = new Date().getFullYear();
 
+  //Responsavel por buscar quais dias estão lotados, e impedir que o usuario selecione estes dias
   useEffect(() => {
     const year = currentMonth.getFullYear();
     const month = currentMonth.getMonth() + 1;
@@ -81,6 +84,9 @@ const CustomDatePicker: React.FC<CustomDatePickerProps> = ({
     );
   };
 
+  //Na seleção de data de nascimento, permite a escolha de ate 130 anos atras
+  //Enquanto na selação de anos futuros para agendamento, permite uma escolha de ate 4 anos a partir do ano atual.
+  //Isso permite que mesmo rodando o programa varios anos no futuro, ele continue rodando sem erros, ja que não estou usando datas fixas.
   const yearOptions = yearRangeDirection === 'past'
     ? Array.from({ length: 130 }, (_, i) => currentYear - i)
     : Array.from({ length: 4 }, (_, i) => currentYear + i);

@@ -1,3 +1,5 @@
+// frontend/src/components/CalendarCard.tsx
+
 import React from 'react';
 import { Box, Heading, Text, Progress } from '@chakra-ui/react';
 

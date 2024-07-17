@@ -1,20 +1,7 @@
+// src/components/agendamentos/EditConsultaModal.tsx
+
 import React, { useState, useEffect } from 'react';
-import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Button,
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  Radio,
-  Stack,
-  useToast
-} from '@chakra-ui/react';
+import {  Modal,  ModalOverlay,  ModalContent,  ModalHeader,  ModalFooter,  ModalBody,  ModalCloseButton,  Button,  FormControl,  FormLabel,  RadioGroup,  Radio,  Stack,  useToast} from '@chakra-ui/react';
 import axios from 'axios';
 
 interface EditConsultaModalProps {
